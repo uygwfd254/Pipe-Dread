@@ -1,0 +1,22 @@
+how we made the art for pixel dread
+empty background: 0089c6
+pipe background: 03d663
+pipe color: 515151
+water color: 66b3ff
+pixel size: 128 x 128
+grid: 7 x 11
+
+desmos.com/calculators
+
+Calc.colors.RED = "#0089c6"
+Calc.colors.BLUE = "#03d663"
+Calc.colors.GREEN = "#515151"
+Calc.colors.ORANGE = "#66b3ff"
+
+6 different filling animation
+
+pipe empty: https://www.desmos.com/calculator/lyackjtzp7
+
+pipe filled: https://www.desmos.com/calculator/syh06wwd8k
+
+

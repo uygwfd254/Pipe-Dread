@@ -29,7 +29,8 @@ public class Score_Management : Singleton<Score_Management>
         update_score_board();
     }
 
-    void update_score_board() {
+    void update_score_board()
+    {
         string information = "Level: " + level.ToString() + "   " +
                              "Scores: " + scores.ToString() + "   " +
                              "Lives: " + lives.ToString() + "   " +

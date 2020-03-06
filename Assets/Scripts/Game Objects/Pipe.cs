@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[System.Serializable]
+[System.Serializable] //public defintion of class
 public class Pipe
 {
     private Vector2 xy_position;

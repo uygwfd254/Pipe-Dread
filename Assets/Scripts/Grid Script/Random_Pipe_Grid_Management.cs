@@ -1,18 +1,22 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Random_Pipe_Grid_Management : MonoBehaviour
 {
+    enum Type {
+        Straight = 1,
+        Curved = 2,
+        Cross = 3
+    }
     private int NUM_OF_PIPE_DISPLAY;
     private Vector2 DIMESION;
     private Vector2 STARTING_COORDS;
     private float TILE_SIZE;
 
-    // pipe objects
+    // pipe objects act like queue
     Pipe[] pipes;
-    //GameObject[] PipeSprite;
-    
 
     // Start is called before the first frame update
     IEnumerator Start()
@@ -27,6 +31,7 @@ public class Random_Pipe_Grid_Management : MonoBehaviour
         pipes = new Pipe[NUM_OF_PIPE_DISPLAY];
 
         generate_empty_grid_with_coords();
+        generate_random_pipe_data();
     }
 
     // Update is called once per frame
@@ -42,9 +47,24 @@ public class Random_Pipe_Grid_Management : MonoBehaviour
         for (int i = 0; i < NUM_OF_PIPE_DISPLAY; i++) {
             GameObject Pipe = (GameObject)Instantiate(RefTile, transform);
             
-            pipes[i] = new Pipe(ref Pipe, STARTING_COORDS.x, STARTING_COORDS.y - i * (TILE_SIZE));
+            pipes[i] = new Pipe(ref Pipe, STARTING_COORDS.x, STARTING_COORDS.y + i * (TILE_SIZE));
         }
 
         Destroy(RefTile);
     }
+
+    void generate_random_pipe_data() {
+        System.Random rnd = new System.Random();
+        Type pipe_type = (Type)rnd.Next(1, 3);
+        
+        // check type
+        if (pipe_type == Type.Straight) {
+            
+        } else if(pipe_type == Type.Curved) {
+            
+        } else {
+            
+        }
+    }
+
 }

@@ -24,6 +24,10 @@ public class UI_Manager : Singleton<UI_Manager>
     private const int RANDOM_PIPE_GRID_ROW = 5;
     private const int RANDOM_PIPE_GRID_COL = 1;
 
+    private const int PIPE_GRID_COL = 11;
+
+    private const int PIPE_GRID_ROW = 7;
+
     void Start()
     {
         // objects declaration
@@ -46,8 +50,9 @@ public class UI_Manager : Singleton<UI_Manager>
 
         // formula application
         starting_coords.x = - parent_scale * ((random_pipe_grid_width_height.x) / 2);
-        starting_coords.y = parent_scale * ((4 * parent_width_height.y + 
-                            random_pipe_grid_width_height.y) / 10);
+        
+        starting_coords.y = parent_scale * ((random_pipe_grid_width_height.y) / 2) -
+                                             (int)Math.Floor((double)(RANDOM_PIPE_GRID_ROW / 2));
 
         return starting_coords;
     }

@@ -916,4 +916,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ac254bcd0c5562ea82b1bc67c7ba92d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  PipeStraight: {fileID: 21300000, guid: 9a2c3cccc023f7e1d8430251457c6980, type: 3}
+  PipeCurve: {fileID: 21300000, guid: 870509cf59f0e3f779019de5dae3379b, type: 3}
+  PipeCross: {fileID: 21300000, guid: 68ecdec221df5cca3be45bb89c02b4eb, type: 3}
+  PipeStart: {fileID: 21300000, guid: b6aae17cab753d84f99aa1ed7e26cbef, type: 3}
   tile_size: 1

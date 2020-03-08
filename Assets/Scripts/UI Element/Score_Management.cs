@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
-public class Score_Management : Singleton<Score_Management>
+public class Score_Management : MonoBehaviour
 {
     protected Score_Management() {}
     // game objects

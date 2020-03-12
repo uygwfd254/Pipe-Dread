@@ -1,15 +1,38 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class Pipe_Grid_Management : MonoBehaviour
 {
     private Vector2 DIMESION;
     private Vector2 STARTING_COORDS;
-    private float TILE_SIZE;
+    private Vector2 MOUSE_X_RESTRICTION;
+    private Vector2 MOUSE_Y_RESTRICTION;
+
+    private Sprite StartPipe;
 
     // pipe objects
-    Pipe[,] pipes;
+    private Pipe[,] pipes;
+    private Pipe first_random_grid_pipe;
+
+    // setup listener to grab first pipe
+    private UnityAction<Event_Params> RandomPipeGridListener;
+
+    void Awake() {
+        RandomPipeGridListener = new UnityAction<Event_Params>(get_first_random_grid_pipe);
+    }
+
+    void OnEnable()
+    {
+        Event_Manager.StartListening("get_first_random_grid_pipe", RandomPipeGridListener);
+    }
+
+    void OnDisable()
+    {
+        Event_Manager.StopListening("get_first_random_grid_pipe", RandomPipeGridListener);
+    }
 
     // Start is called before the first frame update
     IEnumerator Start()
@@ -19,17 +42,26 @@ public class Pipe_Grid_Management : MonoBehaviour
 
         DIMESION = UI_Manager.Instance.get_pipe_grid_dimension();
         STARTING_COORDS = UI_Manager.Instance.get_starting_pipe_grid_coords();
+        MOUSE_X_RESTRICTION = UI_Manager.Instance.get_pipe_grid_x_mouse_domain();
+        MOUSE_Y_RESTRICTION = UI_Manager.Instance.get_pipe_grid_y_mouse_range();
 
-        TILE_SIZE = UI_Manager.Instance.tile_size;
+        StartPipe = UI_Manager.Instance.get_empty_pipe_sprites()[3];
+
         pipes = new Pipe[(int)DIMESION.x, (int)DIMESION.y];
 
         generate_empty_grid_with_coords();
+        generate_starting_pipe();
+        
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        detect_mouse_click_and_position();
+    }
+
+    void get_first_random_grid_pipe(Event_Params pipe) {
+        first_random_grid_pipe = pipe.pipe_param;
     }
 
     void generate_empty_grid_with_coords() {
@@ -43,12 +75,103 @@ public class Pipe_Grid_Management : MonoBehaviour
                 Pipe.name = "Pipe R" + r.ToString() +
                             "C" + c.ToString();
                 pipes[r, c] = new Pipe(ref Pipe,
-                                       STARTING_COORDS.x + (c * TILE_SIZE), 
-                                       STARTING_COORDS.y - (r * TILE_SIZE));
+                                       STARTING_COORDS.x + c, 
+                                       STARTING_COORDS.y - r);
             }
         }
 
         Destroy(RefTile);
     }
+
+    void generate_starting_pipe() {
+        // generate position
+        System.Random rnd = new System.Random(Guid.NewGuid().GetHashCode());
+        int start_row = rnd.Next(0, (int)DIMESION.x);
+        int start_col = rnd.Next(0, (int)DIMESION.y);
+
+        // generate pipe data
+        System.Object[] pipe_data;
+        pipe_data = new System.Object[10];
+        int i = 0;
+
+        // state
+        pipe_data[i++] = PipeType.Start;
+
+        // sprite
+        pipe_data[i++] = StartPipe;
+
+        // generate rotation data
+        int[] possible_rotation = new int[4];
+        int j = 0;
+        Dictionary<string, int> StartRotateRule = 
+                    new Dictionary<string, int>() {
+                        {"r0", 1},
+                        {"r6", 3},
+                        {"c0", 2},
+                        {"c10", 0}
+                    };
+
+        string start_row_string = "r" + start_row.ToString();
+        string start_col_string = "c" + start_col.ToString();
+
+        foreach(KeyValuePair<string, int> element in StartRotateRule) {
+            if (element.Key != start_row_string || 
+                element.Key != start_col_string) {
+                possible_rotation[j++] = element.Value;
+            }
+        }
+
+        int rnd_index = rnd.Next(0, j);
+        pipe_data[i++] = possible_rotation[rnd_index];
+
+        // place the pipe
+        pipes[start_row, start_col].change_pipe_data(pipe_data);
+    }
     
+    void detect_mouse_click_and_position() {
+        // check if left mouse clicked
+        Vector2 mouse_pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        bool is_in_pipe_grid = false;
+        bool has_left_click = false;
+        bool has_right_click = false;
+
+        // checking mouse click and position
+        if (Input.GetMouseButtonDown(0)) {
+            has_left_click = true;
+        }
+
+        if (Input.GetMouseButtonDown(1)) {
+            has_right_click = true;
+        }
+
+        if ((MOUSE_X_RESTRICTION.x <= mouse_pos.x &&
+             mouse_pos.x <= MOUSE_X_RESTRICTION.y) &&
+            (MOUSE_Y_RESTRICTION.x >= mouse_pos.y &&
+             mouse_pos.y >= MOUSE_Y_RESTRICTION.y))
+        {
+            is_in_pipe_grid = true;
+        }
+        
+        if (is_in_pipe_grid && has_left_click) {
+            Vector2 pipe_pos;
+            pipe_pos = new Vector2(
+                (int)Math.Floor((double)(mouse_pos.x - MOUSE_X_RESTRICTION.x)),
+                (int)Math.Floor((double)(MOUSE_Y_RESTRICTION.x - mouse_pos.y))
+            );
+
+            place_down_pipe(pipe_pos);
+        }
+    }
+
+    void place_down_pipe(Vector2 pipe_pos) {
+        Event_Params parameter = new Event_Params();
+        parameter.bool_param = true;
+        Event_Manager.TriggerEvent("send_front_pipe", parameter);
+
+        // extract pipe data from front pipe
+        System.Object[] pipe_data = new System.Object[10];
+        pipe_data = first_random_grid_pipe.get_pipe_data();
+
+        pipes[(int)pipe_pos.y, (int)pipe_pos.x].change_pipe_data(pipe_data);
+    }
 }

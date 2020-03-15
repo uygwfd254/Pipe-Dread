@@ -159,7 +159,19 @@ public class Pipe_Grid_Management : MonoBehaviour
                 (int)Math.Floor((double)(MOUSE_Y_RESTRICTION.x - mouse_pos.y))
             );
 
-            place_down_pipe(pipe_pos);
+            if (pipes[(int)pipe_pos.y, (int)pipe_pos.x].get_pipe_type() == PipeType.Empty) {
+                place_down_pipe(pipe_pos);
+            }
+        }
+
+        if (is_in_pipe_grid && has_right_click) {
+            Vector2 pipe_pos;
+            pipe_pos = new Vector2(
+                (int)Math.Floor((double)(mouse_pos.x - MOUSE_X_RESTRICTION.x)),
+                (int)Math.Floor((double)(MOUSE_Y_RESTRICTION.x - mouse_pos.y))
+            );
+
+            delete_pipe();
         }
     }
 
@@ -173,5 +185,9 @@ public class Pipe_Grid_Management : MonoBehaviour
         pipe_data = first_random_grid_pipe.get_pipe_data();
 
         pipes[(int)pipe_pos.y, (int)pipe_pos.x].change_pipe_data(pipe_data);
+    }
+
+    void delete_pipe() {
+        
     }
 }

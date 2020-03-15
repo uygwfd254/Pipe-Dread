@@ -12,7 +12,7 @@ public class Score_Management : MonoBehaviour
     private int level = 0;
     private int scores = 0;
     private int lives = 0;
-    private int time = 0;
+    private float time = 0f;
     // Start is called before the first frame update
     void Start()
     {
@@ -20,7 +20,7 @@ public class Score_Management : MonoBehaviour
         // original settings
         level = 1;
         lives = 3;
-        time = -10;
+        time = -10f;
     }
 
     // Update is called once per frame
@@ -34,7 +34,7 @@ public class Score_Management : MonoBehaviour
         string information = "Level: " + level.ToString() + "   " +
                              "Scores: " + scores.ToString() + "   " +
                              "Lives: " + lives.ToString() + "   " +
-                             "Time: " + time.ToString();
+                             "Time: " + (-time).ToString("0");
 
         ScoreText.text = information;
     }

@@ -4,11 +4,12 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-enum PipeType {
+public enum PipeType {
     Straight = 0,
     Curved = 1,
     Cross = 2,
-    Start = 3
+    Start = 3,
+    Empty = 4
 }
 
 enum PipeState {
@@ -24,7 +25,7 @@ public class Pipe
     // data member
     private Vector2 xy_position;
     private GameObject PipeSprite;
-    PipeType pipe_type;
+    private PipeType pipe_type;
 
     // equivalent to start()
     public Pipe(ref GameObject Pipe, float x_pos, float y_pos) {
@@ -32,6 +33,7 @@ public class Pipe
 
         PipeSprite = Pipe;
         PipeSprite.transform.position = new Vector2(xy_position.x, xy_position.y);
+        pipe_type = PipeType.Empty;
     }
     public Pipe(ref GameObject Pipe, System.Object[] pipe_data, float x_pos, float y_pos)
         : this(ref Pipe, x_pos, y_pos)
@@ -65,12 +67,16 @@ public class Pipe
         PipeSprite.name = new_name;
     }
 
+    public void set_gameObject_position(Vector2 pos) {
+        PipeSprite.transform.position = new Vector2(pos.x, pos.y);
+    }
+
     public Vector2 get_gameObject_position() {
         return PipeSprite.transform.position;
     }
 
-    public void set_gameObject_position(Vector2 pos) {
-        PipeSprite.transform.position = new Vector2(pos.x, pos.y);
+    public PipeType get_pipe_type() {
+        return pipe_type;
     }
 
     public void destroy_gameObject() {

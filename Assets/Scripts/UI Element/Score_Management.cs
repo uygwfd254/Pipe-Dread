@@ -34,7 +34,7 @@ public class Score_Management : MonoBehaviour
         string information = "Level: " + level.ToString() + "   " +
                              "Scores: " + scores.ToString() + "   " +
                              "Lives: " + lives.ToString() + "   " +
-                             "Time: " + (-time).ToString("0");
+                             "Time: " + (time).ToString("0");
 
         ScoreText.text = information;
     }

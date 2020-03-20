@@ -45,7 +45,7 @@ public class Pipe_Grid_Management : MonoBehaviour
         MOUSE_X_RESTRICTION = UI_Manager.Instance.get_pipe_grid_x_mouse_domain();
         MOUSE_Y_RESTRICTION = UI_Manager.Instance.get_pipe_grid_y_mouse_range();
 
-        StartPipe = UI_Manager.Instance.get_empty_pipe_sprites()[3];
+        StartPipe = UI_Manager.Instance.get_empty_pipe_sprites()[3]; 
 
         pipes = new Pipe[(int)DIMESION.x, (int)DIMESION.y];
 
@@ -105,10 +105,10 @@ public class Pipe_Grid_Management : MonoBehaviour
         int j = 0;
         Dictionary<string, int> StartRotateRule = 
                     new Dictionary<string, int>() {
-                        {"r0", 1},
-                        {"r6", 3},
-                        {"c0", 2},
-                        {"c10", 0}
+                        {"r0", 2},
+                        {"r6", 0},
+                        {"c0", 1},
+                        {"c10", 3}
                     };
 
         string start_row_string = "r" + start_row.ToString();

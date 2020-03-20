@@ -10,7 +10,7 @@ using UnityEngine.Events;
 public class Event_Manager : MonoBehaviour
 {
     [System.Serializable]
-    public class Event : UnityEvent<Event_Params> { }
+    public class Event : UnityEvent<System.Object> { }
     private Dictionary <string, Event> eventDictionary;
 
     private static Event_Manager eventManager;
@@ -44,7 +44,7 @@ public class Event_Manager : MonoBehaviour
         }
     }
 
-    public static void StartListening (string eventName, UnityAction<Event_Params> listener)
+    public static void StartListening (string eventName, UnityAction<System.Object> listener)
     {
         Event thisEvent = null;
         if (instance.eventDictionary.TryGetValue (eventName, out thisEvent))
@@ -60,7 +60,7 @@ public class Event_Manager : MonoBehaviour
         }
     }
 
-    public static void StopListening (string eventName, UnityAction<Event_Params> listener)
+    public static void StopListening (string eventName, UnityAction<System.Object> listener)
     {
         if (eventManager == null) return;
         Event thisEvent = null;
@@ -71,7 +71,7 @@ public class Event_Manager : MonoBehaviour
         }
     }
 
-    public static void TriggerEvent (string eventName,Event_Params parameter)
+    public static void TriggerEvent (string eventName, System.Object parameter)
     {
         Event thisEvent = null;
         if (instance.eventDictionary.TryGetValue (eventName, out thisEvent))
@@ -79,9 +79,4 @@ public class Event_Manager : MonoBehaviour
             thisEvent.Invoke(parameter);
         }
     }
-}
-
-public struct Event_Params {
-    public Pipe pipe_param;
-    public bool bool_param;
 }

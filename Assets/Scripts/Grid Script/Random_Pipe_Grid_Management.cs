@@ -15,10 +15,10 @@ public class Random_Pipe_Grid_Management : MonoBehaviour
     private Sprite[] PipeEmptySprite;
 
     // setup listener to send first pipe
-    private UnityAction<Event_Params> PipeGridListener;
+    private UnityAction<System.Object> PipeGridListener;
 
     void Awake() {
-        PipeGridListener = new UnityAction<Event_Params>(send_front_pipe);
+        PipeGridListener = new UnityAction<System.Object>(send_front_pipe);
     }
 
     void OnEnable()
@@ -104,11 +104,9 @@ public class Random_Pipe_Grid_Management : MonoBehaviour
 
         return pipe_data;
     }
-    void send_front_pipe(Event_Params p) {
-        if (p.bool_param) {
-            Event_Params parameter = new Event_Params();
-            parameter.pipe_param = pipes[0];
-            Event_Manager.TriggerEvent("get_first_random_grid_pipe", parameter);
+    void send_front_pipe(System.Object bool_param) {
+        if ((bool)bool_param) {
+            Event_Manager.TriggerEvent("get_first_random_grid_pipe", pipes[0]);
             pop_front_pipe();
         }
     }

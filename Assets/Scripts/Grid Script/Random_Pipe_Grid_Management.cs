@@ -15,10 +15,10 @@ public class Random_Pipe_Grid_Management : MonoBehaviour
     private Sprite[] PipeEmptySprite;
 
     // setup listener to send first pipe
-    private UnityAction<System.Object> PipeGridListener;
+    private Func<System.Object, System.Object> PipeGridListener;
 
     void Awake() {
-        PipeGridListener = new UnityAction<System.Object>(send_front_pipe);
+        PipeGridListener = new Func<System.Object, System.Object>(send_front_pipe);
     }
 
     void OnEnable()
@@ -51,7 +51,7 @@ public class Random_Pipe_Grid_Management : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        check_first_pipe_is_destoryed();
     }
 
     void generate_empty_grid_with_coords() {
@@ -104,16 +104,20 @@ public class Random_Pipe_Grid_Management : MonoBehaviour
 
         return pipe_data;
     }
-    void send_front_pipe(System.Object bool_param) {
-        if ((bool)bool_param) {
-            Event_Manager.TriggerEvent("get_first_random_grid_pipe", pipes[0]);
+    System.Object send_front_pipe(System.Object p) {
+        Pipe first_pipe = pipes[0];
+        // first destroy gameObject
+        pipes[0].destroy_gameObject();
+
+        return first_pipe;
+    }
+
+    void check_first_pipe_is_destoryed() {
+        if (pipes[0].get_pipe_state() == PipeState.Destroyed)
             pop_front_pipe();
-        }
     }
 
     void pop_front_pipe() {
-        // first destroy gameObject
-        pipes[0].destroy_gameObject();
         
         for (int i = 0; i < NUM_OF_PIPE_DISPLAY - 1; i++) {
             pipes[i] = pipes[i + 1]; // shift pipe array down

@@ -7,11 +7,12 @@ using UnityEngine.Events;
 // got from https://learn.unity.com/tutorial/create-a-simple-messaging-system-with-events#5cf5960fedbc2a281acd21fa
 // and https://stackoverflow.com/questions/42034245/unity-eventmanager-with-delegate-instead-of-unityevent/42034899#42034899
 // and https://gamedev.stackexchange.com/questions/137851/unity-events-with-arguments
+
 public class Event_Manager : MonoBehaviour
 {
-    [System.Serializable]
-    public class Event : UnityEvent<System.Object> { }
-    private Dictionary <string, Event> eventDictionary;
+    //[System.Serializable]
+    //public class Event : UnityEvent<System.Object> { }
+    private Dictionary <string, Func<System.Object, System.Object>> eventDictionary;
 
     private static Event_Manager eventManager;
 
@@ -40,43 +41,46 @@ public class Event_Manager : MonoBehaviour
     {
         if (eventDictionary == null)
         {
-            eventDictionary = new Dictionary<string, Event>();
+            eventDictionary = new Dictionary<string, Func<System.Object, System.Object>>();
         }
     }
 
-    public static void StartListening (string eventName, UnityAction<System.Object> listener)
+    public static void StartListening (string eventName, Func<System.Object, System.Object> listener)
     {
-        Event thisEvent = null;
+        Func<System.Object, System.Object> thisEvent = null;
         if (instance.eventDictionary.TryGetValue (eventName, out thisEvent))
         {
-            thisEvent.AddListener(listener);
-            // instance.eventDictionary[eventName] = thisEvent;
+            thisEvent += listener;
+            instance.eventDictionary[eventName] = thisEvent;
         }
         else
         {
-            thisEvent = new Event();
-            thisEvent.AddListener(listener);
+            thisEvent += listener;
             instance.eventDictionary.Add (eventName, thisEvent);
         }
     }
 
-    public static void StopListening (string eventName, UnityAction<System.Object> listener)
+    public static void StopListening (string eventName, Func<System.Object, System.Object> listener)
     {
         if (eventManager == null) return;
-        Event thisEvent = null;
+        Func<System.Object, System.Object> thisEvent = null;
         if (instance.eventDictionary.TryGetValue (eventName, out thisEvent))
         {
-            thisEvent.RemoveListener(listener);
-            // instance.eventDictionary[eventName] = thisEvent;
+            thisEvent -= listener;
+            instance.eventDictionary[eventName] = thisEvent;
         }
     }
 
-    public static void TriggerEvent (string eventName, System.Object parameter)
+    public static System.Object TriggerEvent (string eventName, System.Object parameter=null)
     {
-        Event thisEvent = null;
+        Func<System.Object, System.Object> thisEvent = null;
+        System.Object output = null;
         if (instance.eventDictionary.TryGetValue (eventName, out thisEvent))
         {
-            thisEvent.Invoke(parameter);
+            output = thisEvent.Invoke(parameter);
         }
+
+        return output;
     }
+
 }

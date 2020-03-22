@@ -15,13 +15,13 @@ public class Pipe_Grid_Management : MonoBehaviour
 
     // pipe objects
     private Pipe[,] pipes;
-    private Pipe first_random_grid_pipe;
 
     // setup listener to grab first pipe
-    private UnityAction<System.Object> RandomPipeGridListener;
+    /*
+    private Func<System.Object, System.Object> RandomPipeGridListener;
 
     void Awake() {
-        RandomPipeGridListener = new UnityAction<System.Object>(get_first_random_grid_pipe);
+        RandomPipeGridListener = new Func<System.Object, System.Object>(get_first_random_grid_pipe);
     }
 
     void OnEnable()
@@ -33,6 +33,7 @@ public class Pipe_Grid_Management : MonoBehaviour
     {
         Event_Manager.StopListening("get_first_random_grid_pipe", RandomPipeGridListener);
     }
+    */
 
     // Start is called before the first frame update
     IEnumerator Start()
@@ -58,10 +59,6 @@ public class Pipe_Grid_Management : MonoBehaviour
     void Update()
     {
         detect_mouse_click_and_position();
-    }
-
-    void get_first_random_grid_pipe(System.Object pipe) {
-        first_random_grid_pipe = (Pipe)pipe;
     }
 
     void generate_empty_grid_with_coords() {
@@ -175,14 +172,17 @@ public class Pipe_Grid_Management : MonoBehaviour
         }
     }
 
-    void place_down_pipe(Vector2 pipe_pos) {
-        Event_Manager.TriggerEvent("send_front_pipe", true);
+    System.Object place_down_pipe(Vector2 pipe_pos) {
+        Pipe first_random_grid_pipe =
+            (Pipe)Event_Manager.TriggerEvent("send_front_pipe");
 
         // extract pipe data from front pipe
         System.Object[] pipe_data = new System.Object[10];
         pipe_data = first_random_grid_pipe.get_pipe_data();
 
         pipes[(int)pipe_pos.y, (int)pipe_pos.x].change_pipe_data(pipe_data);
+
+        return null;
     }
 
     void delete_pipe() {

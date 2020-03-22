@@ -12,11 +12,13 @@ public enum PipeType {
     Empty = 4
 }
 
-enum PipeState {
+[System.Serializable]
+public enum PipeState {
     Empty = 0,
     Filling = 1,
     HalfFilled = 2,
-    Filled = 3
+    Filled = 3,
+    Destroyed = 4
 }
 
 [System.Serializable] //public defintion of class
@@ -26,6 +28,7 @@ public class Pipe
     private Vector2 xy_position;
     private GameObject PipeSprite;
     private PipeType pipe_type;
+    private PipeState pipe_state;
 
     // equivalent to start()
     public Pipe(ref GameObject Pipe, float x_pos, float y_pos) {
@@ -58,7 +61,6 @@ public class Pipe
         pipe_data[i++] = pipe_type;
         pipe_data[i++] = PipeSprite.GetComponent<SpriteRenderer>().sprite;
         pipe_data[i++] = (int)(-(PipeSprite.transform.eulerAngles.z / 90) % 4);
-        Debug.Log((int)pipe_data[2]);
 
         return pipe_data;
     }
@@ -79,7 +81,12 @@ public class Pipe
         return pipe_type;
     }
 
+    public PipeState get_pipe_state() {
+        return pipe_state;
+    }
+
     public void destroy_gameObject() {
         UnityEngine.MonoBehaviour.Destroy(PipeSprite);
+        pipe_state = PipeState.Destroyed;
     }
 }

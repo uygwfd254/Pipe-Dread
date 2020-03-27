@@ -52,6 +52,9 @@ public class Pipe
         pipe_type = (PipeType)pipe_data[i++];
         PipeSprite.GetComponent<SpriteRenderer>().sprite = (Sprite)pipe_data[i++];
         PipeSprite.transform.Rotate(Vector3.forward * -90 * (int)pipe_data[i++]);
+
+        // after data is inserted
+        PipeSprite.GetComponent<Animator>().enabled = false;
     }
 
     public System.Object[] get_pipe_data() {

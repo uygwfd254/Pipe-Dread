@@ -16,24 +16,7 @@ public class Pipe_Grid_Management : MonoBehaviour
     // pipe objects
     private Pipe[,] pipes;
 
-    // setup listener to grab first pipe
-    /*
-    private Func<System.Object, System.Object> RandomPipeGridListener;
-
-    void Awake() {
-        RandomPipeGridListener = new Func<System.Object, System.Object>(get_first_random_grid_pipe);
-    }
-
-    void OnEnable()
-    {
-        Event_Manager.StartListening("get_first_random_grid_pipe", RandomPipeGridListener);
-    }
-
-    void OnDisable()
-    {
-        Event_Manager.StopListening("get_first_random_grid_pipe", RandomPipeGridListener);
-    }
-    */
+    private int current_time = 0; // start at 0
 
     // Start is called before the first frame update
     IEnumerator Start()
@@ -59,6 +42,7 @@ public class Pipe_Grid_Management : MonoBehaviour
     void Update()
     {
         detect_mouse_click_and_position();
+        update_time();
     }
 
     void generate_empty_grid_with_coords() {
@@ -170,6 +154,11 @@ public class Pipe_Grid_Management : MonoBehaviour
 
             delete_pipe();
         }
+    }
+
+    void update_time() {
+        int time = (int)Event_Manager.TriggerEvent("get_time");
+        current_time = time;
     }
 
     System.Object place_down_pipe(Vector2 pipe_pos) {

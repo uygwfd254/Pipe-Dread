@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
@@ -12,7 +13,7 @@ public class Score_Management : MonoBehaviour
     private int level = 0;
     private int scores = 0;
     private int lives = 0;
-    private float time = 0f;
+    private int time = 0;
     // Start is called before the first frame update
     void Start()
     {
@@ -20,13 +21,14 @@ public class Score_Management : MonoBehaviour
         // original settings
         level = 1;
         lives = 3;
-        time = -10f;
+        time = 0;
     }
 
     // Update is called once per frame
     void Update()
     {
         update_score_board();
+        update_time();
     }
 
     void update_score_board()
@@ -34,8 +36,12 @@ public class Score_Management : MonoBehaviour
         string information = "Level: " + level.ToString() + "   " +
                              "Scores: " + scores.ToString() + "   " +
                              "Lives: " + lives.ToString() + "   " +
-                             "Time: " + (time).ToString("0");
+                             "Time: " + (Math.Abs(time - 10)).ToString("0");
 
         ScoreText.text = information;
+    }
+
+    void update_time() {
+        time = (int)Event_Manager.TriggerEvent("get_time");
     }
 }

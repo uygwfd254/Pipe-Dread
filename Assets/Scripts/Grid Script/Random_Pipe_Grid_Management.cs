@@ -46,6 +46,9 @@ public class Random_Pipe_Grid_Management : MonoBehaviour
         pipes = new Pipe[NUM_OF_PIPE_DISPLAY];
 
         generate_empty_grid_with_coords();
+
+        // start timer
+        Event_Manager.TriggerEvent("start_timer");
     }
 
     // Update is called once per frame
@@ -113,8 +116,10 @@ public class Random_Pipe_Grid_Management : MonoBehaviour
     }
 
     void check_first_pipe_is_destoryed() {
-        if (pipes[0].get_pipe_state() == PipeState.Destroyed)
-            pop_front_pipe();
+        try {
+            if (pipes[0].get_pipe_state() == PipeState.Destroyed)
+                pop_front_pipe();
+        } catch {}
     }
 
     void pop_front_pipe() {

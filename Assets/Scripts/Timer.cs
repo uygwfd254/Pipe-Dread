@@ -11,6 +11,27 @@ public class Timer : MonoBehaviour
     private bool m_hasTimerStarted;
     private bool m_hasReachedTarget;
 
+    // set up listeners
+    private Func<System.Object, System.Object> TimeStartListener;
+    private Func<System.Object, System.Object> GetTimeListener;
+
+    void Awake() {
+        TimeStartListener = new Func<System.Object, System.Object>(startTimer);
+        GetTimeListener = new Func<System.Object, System.Object>(getSecond);
+    }
+
+    void OnEnable()
+    {
+        Event_Manager.StartListening("start_timer", TimeStartListener);
+        Event_Manager.StartListening("get_time", GetTimeListener);
+    }
+
+    void OnDisable()
+    {
+        Event_Manager.StopListening("start_timer", TimeStartListener);
+        Event_Manager.StopListening("get_time", GetTimeListener);
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -37,8 +58,9 @@ public class Timer : MonoBehaviour
     }
 
     // timer functions
-    void startTimer() {
+    System.Object startTimer(System.Object p) {
         m_hasTimerStarted = true;
+        return null;
     }
 
     void stopTimer() {
@@ -53,7 +75,7 @@ public class Timer : MonoBehaviour
     }
 
     // setters and getters
-    int getSecond() {
+    System.Object getSecond(System.Object p) {
         return (int)Math.Floor((double)m_seconds);
     }
 

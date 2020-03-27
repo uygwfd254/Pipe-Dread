@@ -15,10 +15,15 @@ public enum PipeType {
 [System.Serializable]
 public enum PipeState {
     Empty = 0,
-    Filling = 1,
-    HalfFilled = 2,
-    Filled = 3,
-    Destroyed = 4
+    HalfFilled = 1,
+    Filled = 2,
+    Destroyed = 3
+}
+
+public enum CrossPipeFillState {
+    Empty = 0,
+    Vertical = 1,
+    Horizontal = 2
 }
 
 [System.Serializable] //public defintion of class
@@ -29,6 +34,7 @@ public class Pipe
     private GameObject PipeSprite;
     private PipeType pipe_type;
     private PipeState pipe_state;
+    private CrossPipeFillState cross_pipe_state;
 
     // equivalent to start()
     public Pipe(ref GameObject Pipe, float x_pos, float y_pos) {
@@ -37,6 +43,7 @@ public class Pipe
         PipeSprite = Pipe;
         PipeSprite.transform.position = new Vector2(xy_position.x, xy_position.y);
         pipe_type = PipeType.Empty;
+        cross_pipe_state = CrossPipeFillState.Empty;
     }
     public Pipe(ref GameObject Pipe, System.Object[] pipe_data, float x_pos, float y_pos)
         : this(ref Pipe, x_pos, y_pos)
@@ -91,5 +98,19 @@ public class Pipe
     public void destroy_gameObject() {
         UnityEngine.MonoBehaviour.Destroy(PipeSprite);
         pipe_state = PipeState.Destroyed;
+    }
+
+    // animations
+    public void start_filling() {
+        // start animation
+        PipeSprite.GetComponent<Animator>().enabled = true;
+        if (pipe_type == PipeType.Cross) {
+            PipeSprite.GetComponent<Animator>().SetTrigger(pipe_type.ToString() + 
+                                                           pipe_state.ToString() + 
+                                                           cross_pipe_state.ToString());
+        }
+        PipeSprite.GetComponent<Animator>().SetTrigger(pipe_type.ToString());
+        
+        pipe_state = PipeState.Filled;
     }
 }

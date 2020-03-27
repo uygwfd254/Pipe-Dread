@@ -12,6 +12,7 @@ public class Pipe_Grid_Management : MonoBehaviour
     private Vector2 MOUSE_Y_RESTRICTION;
 
     private Sprite StartPipe;
+    private Vector2 StartPipeCoord;
 
     // pipe objects
     private Pipe[,] pipes;
@@ -43,6 +44,7 @@ public class Pipe_Grid_Management : MonoBehaviour
     {
         detect_mouse_click_and_position();
         update_time();
+        is_it_time_to_start();
     }
 
     void generate_empty_grid_with_coords() {
@@ -69,6 +71,7 @@ public class Pipe_Grid_Management : MonoBehaviour
         System.Random rnd = new System.Random(Guid.NewGuid().GetHashCode());
         int start_row = rnd.Next(0, (int)DIMESION.x);
         int start_col = rnd.Next(0, (int)DIMESION.y);
+        StartPipeCoord = new Vector2(start_row, start_col);
 
         // generate pipe data
         System.Object[] pipe_data;
@@ -96,7 +99,7 @@ public class Pipe_Grid_Management : MonoBehaviour
         string start_col_string = "c" + start_col.ToString();
 
         foreach(KeyValuePair<string, int> element in StartRotateRule) {
-            if (element.Key != start_row_string || 
+            if (element.Key != start_row_string && 
                 element.Key != start_col_string) {
                 possible_rotation[j++] = element.Value;
             }
@@ -172,6 +175,12 @@ public class Pipe_Grid_Management : MonoBehaviour
         pipes[(int)pipe_pos.y, (int)pipe_pos.x].change_pipe_data(pipe_data);
 
         return null;
+    }
+
+    void is_it_time_to_start() {
+        if (current_time == 10) {
+            pipes[(int)StartPipeCoord.x, (int)StartPipeCoord.y].start_filling();
+        }
     }
 
     void delete_pipe() {

@@ -145,6 +145,7 @@ public class Pipe
     private PipeState pipe_state;
     private CrossPipeFillState cross_pipe_state;
     private string curved_pipe_side;
+    private bool cross_flip;
     private BoolPipeSide pipe_open_side;
     private ObjectPipeSide adjacent_pipes;
     private Pipe[] connect_pipe;
@@ -159,6 +160,7 @@ public class Pipe
         cross_pipe_state = CrossPipeFillState.Empty;
 
         adjacent_pipes = new ObjectPipeSide();
+        cross_flip = false;
         //rc_index = new Vector2();
     }
     public Pipe(ref GameObject Pipe, System.Object[] pipe_data,
@@ -303,8 +305,10 @@ public class Pipe
 
             case PipeType.Cross:
                 foreach(string element in restriction) {
-                    if (side == element)
+                    if (side == element && !cross_flip) {
                         PipeSprite.transform.Rotate(Vector3.forward * 180);
+                        cross_flip = true;
+                    }
                 } 
                 break;
 

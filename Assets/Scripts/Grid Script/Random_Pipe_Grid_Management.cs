@@ -15,20 +15,20 @@ public class Random_Pipe_Grid_Management : MonoBehaviour
     private Sprite[] PipeEmptySprite;
 
     // setup listener to send first pipe
-    private Func<System.Object, System.Object> PipeGridListener;
+    private Func<System.Object, System.Object> RandPipeGridListener;
 
     void Awake() {
-        PipeGridListener = new Func<System.Object, System.Object>(send_front_pipe);
+        RandPipeGridListener = new Func<System.Object, System.Object>(send_front_pipe);
     }
 
     void OnEnable()
     {
-        Event_Manager.StartListening("send_front_pipe", PipeGridListener);
+        Event_Manager.StartListening("send_front_pipe", RandPipeGridListener);
     }
 
     void OnDisable()
     {
-        Event_Manager.StopListening("send_front_pipe", PipeGridListener);
+        Event_Manager.StopListening("send_front_pipe", RandPipeGridListener);
     }
 
 
@@ -46,9 +46,6 @@ public class Random_Pipe_Grid_Management : MonoBehaviour
         pipes = new Pipe[NUM_OF_PIPE_DISPLAY];
 
         generate_empty_grid_with_coords();
-
-        // start timer
-        Event_Manager.TriggerEvent("start_timer");
     }
 
     // Update is called once per frame
@@ -104,6 +101,55 @@ public class Random_Pipe_Grid_Management : MonoBehaviour
                 break;
         }
         pipe_data[i++] = num_of_rotation;
+
+        // bad code:
+        pipe_data[6] = "";
+        // generate open side base on rotation
+        bool[] sides = new bool[4];
+        switch(pipe_type) {
+            case PipeType.Straight:
+                if (num_of_rotation == 1)
+                    sides = new bool[4] {true, false, true, false};
+                else
+                    sides = new bool[4] {false, true, false, true};
+
+                break;
+            
+            case PipeType.Curved:
+                string[] sides_ = new string[4] {"R", "D", "L", "U"};
+                string side__ = ""; //fml
+                sides = new bool[4] {true, true, false, false};
+
+                bool tmp;
+                // array rotate to right
+                for (int k = 0; k < num_of_rotation; k++) {
+                    tmp = sides[3];
+                    for (int l = 3; l > 0; l--)
+                        sides[l] = sides[l - 1];
+                    sides[0] = tmp;
+                }
+                int m = 0;
+                foreach (string elem in sides_) {
+                    if (sides[m])
+                        side__ += elem;
+                    m++;
+                }
+                pipe_data[6] = side__;
+                break;
+            
+            case PipeType.Cross:
+                sides = new bool[4] {true, true, true, true};
+                
+                break;
+
+            default:
+                break;
+        }
+        pipe_data[i++] = new BoolPipeSide(sides);
+
+        string is_in_grid = "no";
+        pipe_data[i++] = is_in_grid;
+        pipe_data[i++] = new Vector2(0, 0);
 
         return pipe_data;
     }

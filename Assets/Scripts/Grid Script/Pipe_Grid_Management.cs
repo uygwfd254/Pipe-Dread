@@ -16,8 +16,26 @@ public class Pipe_Grid_Management : MonoBehaviour
 
     // pipe objects
     private Pipe[,] pipes;
+    private Pipe[] connected_pipe;
+    private int connect_pipe_index;
 
     private int current_time = 0; // start at 0
+
+    private Func<System.Object, System.Object> PipeGridListener;
+
+    void Awake() {
+        PipeGridListener = new Func<System.Object, System.Object>(get_pipe_with_index);
+    }
+
+    void OnEnable()
+    {
+        Event_Manager.StartListening("get_pipe_with_index", PipeGridListener);
+    }
+
+    void OnDisable()
+    {
+        Event_Manager.StopListening("get_pipe_with_index", PipeGridListener);
+    }
 
     // Start is called before the first frame update
     IEnumerator Start()
@@ -33,10 +51,14 @@ public class Pipe_Grid_Management : MonoBehaviour
         StartPipe = UI_Manager.Instance.get_empty_pipe_sprites()[3]; 
 
         pipes = new Pipe[(int)DIMESION.x, (int)DIMESION.y];
+        connected_pipe = new Pipe[(int)DIMESION.x * (int)DIMESION.y];
+        connect_pipe_index = 0;
 
         generate_empty_grid_with_coords();
         generate_starting_pipe();
-        
+
+        // start timer
+        Event_Manager.TriggerEvent("start_timer");
     }
 
     // Update is called once per frame
@@ -45,6 +67,7 @@ public class Pipe_Grid_Management : MonoBehaviour
         detect_mouse_click_and_position();
         update_time();
         is_it_time_to_start();
+        check_if_current_connect_pipe_finish_animating();
     }
 
     void generate_empty_grid_with_coords() {
@@ -106,10 +129,20 @@ public class Pipe_Grid_Management : MonoBehaviour
         }
 
         int rnd_index = rnd.Next(0, j);
-        pipe_data[i++] = possible_rotation[rnd_index];
+        int num_of_rotation = possible_rotation[rnd_index];
+        pipe_data[i++] = num_of_rotation;
+
+        // generate open sides
+        bool[] sides = new bool[4] {false, false, false, false};
+        sides[(num_of_rotation + 1) % 4] = true;
+
+        pipe_data[i++] = new BoolPipeSide(sides);
+        pipe_data[5] = new Vector2(start_row, start_col);
+        
 
         // place the pipe
         pipes[start_row, start_col].change_pipe_data(pipe_data);
+        connected_pipe[connect_pipe_index] = pipes[start_row, start_col];
     }
     
     void detect_mouse_click_and_position() {
@@ -155,7 +188,10 @@ public class Pipe_Grid_Management : MonoBehaviour
                 (int)Math.Floor((double)(MOUSE_Y_RESTRICTION.x - mouse_pos.y))
             );
 
-            delete_pipe();
+            if (pipes[(int)pipe_pos.y, (int)pipe_pos.x].get_pipe_state() == PipeState.Empty &&
+                pipes[(int)pipe_pos.y, (int)pipe_pos.x].get_pipe_type() != PipeType.Start) {
+                delete_pipe(pipe_pos);
+            }
         }
     }
 
@@ -171,6 +207,8 @@ public class Pipe_Grid_Management : MonoBehaviour
         // extract pipe data from front pipe
         System.Object[] pipe_data = new System.Object[10];
         pipe_data = first_random_grid_pipe.get_pipe_data();
+        pipe_data[4] = "yes";
+        pipe_data[5] = new Vector2(pipe_pos.y, pipe_pos.x);
 
         pipes[(int)pipe_pos.y, (int)pipe_pos.x].change_pipe_data(pipe_data);
 
@@ -183,7 +221,40 @@ public class Pipe_Grid_Management : MonoBehaviour
         }
     }
 
-    void delete_pipe() {
-        
+    void delete_pipe(Vector2 pipe_pos) {
+        GameObject RefTile = (GameObject)Instantiate(Resources.Load("Pipe Sprite"));
+
+        int r = (int)pipe_pos.y;
+        int c = (int)pipe_pos.x;
+        GameObject Pipe = (GameObject)Instantiate(RefTile, transform);
+
+        Pipe.name = "Pipe R" + r.ToString() +
+                    "C" + c.ToString();
+        pipes[r, c].destroy_gameObject();
+        pipes[r, c] = new Pipe(ref Pipe,
+                               STARTING_COORDS.x + c, 
+                               STARTING_COORDS.y - r);
+
+        Destroy(RefTile);
+    }
+
+    void check_if_current_connect_pipe_finish_animating() {
+        if (current_time > 10) {
+            if (connected_pipe[connect_pipe_index].check_animation_is_finished()) {
+                if (connected_pipe[connect_pipe_index].next_pipe() != null) {
+                    connected_pipe[connect_pipe_index + 1] =
+                        connected_pipe[connect_pipe_index].next_pipe();
+                    connected_pipe[connect_pipe_index].finished_animation();
+                    connect_pipe_index++;
+                } else {
+                    Time.timeScale = 0;
+                }
+            }
+        }
+    }
+
+    public System.Object get_pipe_with_index(System.Object index) {
+        Vector2 _index = (Vector2)index;
+        return pipes[(int)_index.x, (int)_index.y];
     }
 }

@@ -13,22 +13,26 @@ public class Timer : MonoBehaviour
 
     // set up listeners
     private Func<System.Object, System.Object> TimeStartListener;
+    private Func<System.Object, System.Object> TimeStopListener;
     private Func<System.Object, System.Object> GetTimeListener;
 
     void Awake() {
         TimeStartListener = new Func<System.Object, System.Object>(startTimer);
+        TimeStopListener = new Func<System.Object, System.Object>(stopTimer);
         GetTimeListener = new Func<System.Object, System.Object>(getSecond);
     }
 
     void OnEnable()
     {
         Event_Manager.StartListening("start_timer", TimeStartListener);
+        Event_Manager.StartListening("stop_timer", TimeStopListener);
         Event_Manager.StartListening("get_time", GetTimeListener);
     }
 
     void OnDisable()
     {
         Event_Manager.StopListening("start_timer", TimeStartListener);
+        Event_Manager.StopListening("stop_timer", TimeStopListener);
         Event_Manager.StopListening("get_time", GetTimeListener);
     }
 
@@ -63,13 +67,14 @@ public class Timer : MonoBehaviour
         return null;
     }
 
-    void stopTimer() {
+    System.Object stopTimer(System.Object p) {
         m_hasTimerStarted = false;
+        return null;
     }
 
     void resetTimer() {
         if (m_hasTimerStarted)
-            stopTimer();
+            stopTimer(null);
         
         m_seconds = 0f;
     }

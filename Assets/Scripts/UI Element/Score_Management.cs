@@ -10,18 +10,23 @@ public class Score_Management : MonoBehaviour
     // game objects
     TextMeshProUGUI ScoreText;
 
-    int level = 0;
-    int scores = 0;
-    int lives = 0;
-    int time = 0;
+    int level;
+    int scores;
+    int lives;
+    int time;
+    int start_time;
     // Start is called before the first frame update
     void Start()
     {
         ScoreText = transform.Find("Score and Info").GetComponent<TextMeshProUGUI>();
         // original settings
-        level = 1;
-        lives = 3;
+        level = PlayerPrefs.GetInt("Level", 1);
+        lives = PlayerPrefs.GetInt("Lives", 3);
         time = 0;
+        start_time = 15;
+
+        if (lives == 0)
+            Level_Manager.Instance.FadeToMainMenu();
     }
 
     // Update is called once per frame
@@ -36,12 +41,66 @@ public class Score_Management : MonoBehaviour
         string information = "Level: " + level.ToString() + "   " +
                              "Scores: " + scores.ToString() + "   " +
                              "Lives: " + lives.ToString() + "   " +
-                             "Time: " + (Math.Abs(time - 10)).ToString("0");
+                             "Time: " + (Math.Abs(time - start_time)).ToString("0");
 
         ScoreText.text = information;
     }
 
     void update_time() {
         time = (int)Event_Manager.TriggerEvent("get_time");
+    }
+
+    // set up listener for communication
+    Func<System.Object, System.Object> RemoveLives;
+    Func<System.Object, System.Object> AddScore;
+    Func<System.Object, System.Object> SubtractScore;
+    Func<System.Object, System.Object> GoToNextLevel;
+
+    void Awake() {
+        RemoveLives = new Func<System.Object, System.Object>(removeOneLive);
+        AddScore = new Func<System.Object, System.Object>(addScore);
+        SubtractScore = new Func<System.Object, System.Object>(subtractScore);
+        GoToNextLevel = new Func<System.Object, System.Object>(goToNextLevel);
+    }
+
+    void OnEnable()
+    {
+        Event_Manager.StartListening("remove_a_live", RemoveLives);
+        Event_Manager.StartListening("add_score_to_scoreboard", AddScore);
+        Event_Manager.StartListening("subtract_score_to_scoreboard", SubtractScore);
+        Event_Manager.StartListening("go_to_next_level", GoToNextLevel);
+    }
+
+    void OnDisable()
+    {
+        Event_Manager.StopListening("remove_a_live", RemoveLives);
+        Event_Manager.StopListening("add_score_to_scoreboard", AddScore);
+        Event_Manager.StopListening("subtract_score_to_scoreboard", SubtractScore);
+        Event_Manager.StopListening("go_to_next_level", GoToNextLevel);
+    }
+
+    // listening functions
+    System.Object removeOneLive(System.Object p) {
+        lives--;
+        PlayerPrefs.SetInt("Lives", lives);
+        return null;
+    }
+
+    System.Object addScore(System.Object score) {
+        scores += (int)score;
+        return null;
+    }
+
+    System.Object subtractScore(System.Object score) {
+        scores -= (int)score;
+        return null;
+    }
+
+    System.Object goToNextLevel(System.Object p) {
+        level++;
+        lives++;
+        PlayerPrefs.SetInt("Level", level);
+        Level_Manager.Instance.ReloadCurrentScene();
+        return null;
     }
 }

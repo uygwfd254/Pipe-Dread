@@ -4,13 +4,36 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
+public class PipeUtil {
+    public Dictionary<string, string> opposite_side_list = 
+        new Dictionary<string, string>() {
+            {"R", "L"},
+            {"D", "U"},
+            {"L", "R"},
+            {"U", "D"},
+            {"", ""}
+        };
+    
+    public Dictionary<string, Vector2> search_coord_list =
+            new Dictionary<string, Vector2>() {
+                {"R", new Vector2(0, 1)},
+                {"D", new Vector2(1, 0)},
+                {"L", new Vector2(0, -1)},
+                {"U", new Vector2(-1, 0)},
+            };
+
+    public PipeUtil() {}
+}
+
+[System.Serializable]
 public enum PipeType {
     // also pipe sprite index
     Straight = 0,
     Curved = 1,
     Cross = 2,
     Start = 3,
-    Empty = 4
+    Empty = 4,
+    End
 }
 
 [System.Serializable]
@@ -80,13 +103,6 @@ public class BoolPipeSide {
 [System.Serializable]
 class ObjectPipeSide {
     Dictionary<string, Pipe> PipeSides;
-    Dictionary<string, string> opposide_side_list = 
-        new Dictionary<string, string>() {
-            {"R", "L"},
-            {"D", "U"},
-            {"L", "R"},
-            {"U", "D"}
-        };
 
     public ObjectPipeSide() {
         PipeSides = new Dictionary<string, Pipe>() {
@@ -111,7 +127,8 @@ class ObjectPipeSide {
     }
 
     public string get_opposite_pipe_string(string side) {
-        foreach(KeyValuePair<string, string> element in opposide_side_list) {
+        PipeUtil util = new PipeUtil();
+        foreach(KeyValuePair<string, string> element in util.opposite_side_list) {
             if (element.Key == side)
                 return element.Value;
         }

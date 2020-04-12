@@ -14,23 +14,6 @@ public class Random_Pipe_Grid_Management : MonoBehaviour
     Pipe[] pipes;
     private Sprite[] PipeEmptySprite;
 
-    // setup listener to send first pipe
-    private Func<System.Object, System.Object> RandPipeGridListener;
-
-    void Awake() {
-        RandPipeGridListener = new Func<System.Object, System.Object>(send_front_pipe);
-    }
-
-    void OnEnable()
-    {
-        Event_Manager.StartListening("send_front_pipe", RandPipeGridListener);
-    }
-
-    void OnDisable()
-    {
-        Event_Manager.StopListening("send_front_pipe", RandPipeGridListener);
-    }
-
 
     // Start is called before the first frame update
     IEnumerator Start()
@@ -149,13 +132,6 @@ public class Random_Pipe_Grid_Management : MonoBehaviour
 
         return pipe_data;
     }
-    System.Object send_front_pipe(System.Object p) {
-        Pipe first_pipe = pipes[0];
-        // first destroy gameObject
-        pipes[0].destroy_gameObject();
-
-        return first_pipe;
-    }
 
     void check_first_pipe_is_destroyed() {
         try {
@@ -191,5 +167,31 @@ public class Random_Pipe_Grid_Management : MonoBehaviour
 
             pipes[i].set_gameObject_position(pipe_pos);
         }
+    }
+
+    // setup listener to send first pipe
+    private Func<System.Object, System.Object> RandPipeGridListener;
+
+    void Awake() {
+        RandPipeGridListener = new Func<System.Object, System.Object>(send_front_pipe);
+    }
+
+    void OnEnable()
+    {
+        Event_Manager.StartListening("send_front_pipe", RandPipeGridListener);
+    }
+
+    void OnDisable()
+    {
+        Event_Manager.StopListening("send_front_pipe", RandPipeGridListener);
+    }
+
+    // listener function
+    System.Object send_front_pipe(System.Object p) {
+        Pipe first_pipe = pipes[0];
+        // first destroy gameObject
+        pipes[0].destroy_gameObject();
+
+        return first_pipe;
     }
 }

@@ -21,6 +21,11 @@ public class Pipe_Grid_Management : MonoBehaviour
     Pipe[] connectedPipe;
     int connectPipeIndex;
 
+    // game states
+    bool gameOver;
+    bool passedLevel;
+    int start_time;
+
     // Start is called before the first frame update
     IEnumerator Start()
     {
@@ -36,9 +41,12 @@ public class Pipe_Grid_Management : MonoBehaviour
         pipes = new Pipe[(int)DIMESION.x, (int)DIMESION.y];
         connectedPipe = new Pipe[(int)DIMESION.x * (int)DIMESION.y];
         connectPipeIndex = 0;
+        gameOver = false;
+        passedLevel = false;
+        start_time = 15;
 
         generate_empty_grid_with_coords();
-        generate_starting_pipe();
+        generate_starting_and_ending_pipe();
 
         // start timer
         Event_Manager.TriggerEvent("start_timer");
@@ -76,7 +84,7 @@ public class Pipe_Grid_Management : MonoBehaviour
             is_in_pipe_grid = true;
         }
         
-        if (is_in_pipe_grid && has_left_click) {
+        if (is_in_pipe_grid && has_left_click && !gameOver) {
             Vector2 pipe_pos;
             pipe_pos = new Vector2(
                 (int)Math.Floor((double)(MOUSE_Y_RESTRICTION.x - mouse_pos.y)),
@@ -88,7 +96,7 @@ public class Pipe_Grid_Management : MonoBehaviour
             }
         }
 
-        if (is_in_pipe_grid && has_right_click) {
+        if (is_in_pipe_grid && has_right_click && !gameOver) {
             Vector2 pipe_pos;
             pipe_pos = new Vector2(
                 (int)Math.Floor((double)(MOUSE_Y_RESTRICTION.x - mouse_pos.y)),
@@ -105,19 +113,29 @@ public class Pipe_Grid_Management : MonoBehaviour
     void check_connect_pipe_animaton() {
         int time = (int)Event_Manager.TriggerEvent("get_time");
 
-        if (time == 10) {
+        if (time == start_time) {
             pipes[(int)StartPipeCoord.x, (int)StartPipeCoord.y].start_filling();
         }
 
-        if (time > 10) {
+        if (gameOver) return;
+
+        if (time > start_time) {
             if (connectedPipe[connectPipeIndex].check_animation_is_finished()) {
                 if (connectedPipe[connectPipeIndex].next_pipe() != null) {
+                    if (connectedPipe[connectPipeIndex].next_pipe().get_pipe_type() == PipeType.End) {
+                        passedLevel = true;
+                    }
                     connectedPipe[connectPipeIndex + 1] =
                         connectedPipe[connectPipeIndex].next_pipe();
                     connectedPipe[connectPipeIndex].finished_animation();
                     connectPipeIndex++;
+                    Event_Manager.TriggerEvent("add_score_to_scoreboard", 10);
+                } else if (passedLevel) {
+                    Event_Manager.TriggerEvent("go_to_next_level");
                 } else {
-                    Time.timeScale = 0;
+                    gameOver = true;
+                    Event_Manager.TriggerEvent("stop_timer");
+                    Event_Manager.TriggerEvent("remove_a_live");
                 }
             }
         }
@@ -143,57 +161,106 @@ public class Pipe_Grid_Management : MonoBehaviour
         Destroy(RefTile);
     }
 
-    void generate_starting_pipe() {
+    void generate_starting_and_ending_pipe() {
         // generate position
         System.Random rnd = new System.Random(Guid.NewGuid().GetHashCode());
         int start_row = rnd.Next(0, (int)DIMESION.x);
         int start_col = rnd.Next(0, (int)DIMESION.y);
+        int end_row = rnd.Next(0, (int)DIMESION.x);
+        int end_col = rnd.Next(0, (int)DIMESION.y);
+
+        // make sure coords are the same
+        while(start_row == end_row && start_col == end_col) {
+            end_row = rnd.Next(0, (int)DIMESION.x);
+            end_col = rnd.Next(0, (int)DIMESION.y);
+        }
+
         StartPipeCoord = new Vector2(start_row, start_col);
 
         // generate pipe data
-        PipeData pipe_data = new PipeData();
+        PipeData start_pipe_data = new PipeData();
+        PipeData end_pipe_data = new PipeData();
 
         // state
-        pipe_data.pipeType = PipeType.Start;
+        start_pipe_data.pipeType = PipeType.Start;
+        end_pipe_data.pipeType = PipeType.End;
 
         // sprite
-        pipe_data.PipeSprite = StartPipe;
+        start_pipe_data.PipeSprite = StartPipe;
+        end_pipe_data.PipeSprite = StartPipe; // they look the same
 
         // generate rotation data
-        int[] possible_rotation = new int[4];
+        int[] start_possible_rotation = new int[4];
+        int[] end_possible_rotation = new int[4];
         int i = 0;
-        Dictionary<string, int> StartRotateRule = 
-                    new Dictionary<string, int>() {
-                        {"r0", 2},
-                        {"r6", 0},
-                        {"c0", 1},
-                        {"c10", 3}
-                    };
+        int j = 0;
+        PipeUtil util = new PipeUtil();
+        Dictionary<string, int> RotateRule = 
+            new Dictionary<string, int>() {
+                {"r0", 2}, // top restriction
+                {"r6", 0}, // bottom
+                {"c0", 1}, // left
+                {"c10", 3} // right
+            };
+        
+        Dictionary<int, string> ForbidRotateRule =
+            new Dictionary<int, string>() {
+                {2, "U"}, // top restriction
+                {0, "D"}, // bottom
+                {1, "L"}, // left
+                {3, "R"}  // right
+            };
 
         string start_row_string = "r" + start_row.ToString();
         string start_col_string = "c" + start_col.ToString();
+        string end_row_string = "r" + end_row.ToString();
+        string end_col_string = "c" + end_col.ToString();
+        string start_found_end = "";
 
-        foreach(KeyValuePair<string, int> element in StartRotateRule) {
-            if (element.Key != start_row_string && 
-                element.Key != start_col_string) {
-                possible_rotation[i++] = element.Value;
+        foreach(KeyValuePair<string, Vector2> element in util.search_coord_list) {
+            if (start_row + element.Value.x == end_row &&
+                start_col + element.Value.y == end_col) {
+                start_found_end = element.Key;
             }
         }
 
-        int rnd_index = rnd.Next(0, i);
-        int num_of_rotation = possible_rotation[rnd_index];
-        pipe_data.rotationTimes = num_of_rotation;
+        foreach(KeyValuePair<string, int> element in RotateRule) {
+            if (element.Key != start_row_string && 
+                element.Key != start_col_string &&
+                ForbidRotateRule[element.Value] != start_found_end) {
+                start_possible_rotation[i++] = element.Value;
+            }
+
+            if (element.Key != end_row_string && 
+                element.Key != end_col_string &&
+                ForbidRotateRule[element.Value] != util.opposite_side_list[start_found_end]) {
+                end_possible_rotation[j++] = element.Value;
+            }
+        }
+
+        int start_rnd_index = rnd.Next(0, i);
+        int start_num_of_rotation = start_possible_rotation[start_rnd_index];
+        start_pipe_data.rotationTimes = start_num_of_rotation;
+
+        int end_rnd_index = rnd.Next(0, j);
+        int end_num_of_rotation = end_possible_rotation[end_rnd_index];
+        end_pipe_data.rotationTimes = end_num_of_rotation;
 
         // generate open sides
-        bool[] sides = new bool[4] {false, false, false, false};
-        sides[(num_of_rotation + 1) % 4] = true;
+        bool[] start_sides = new bool[4] {false, false, false, false};
+        start_sides[(start_num_of_rotation + 1) % 4] = true;
+        bool[] end_sides = new bool[4] {false, false, false, false};
+        end_sides[(end_num_of_rotation + 1) % 4] = true;
 
-        pipe_data.boolPipeSide = new BoolPipeSide(sides);
-        pipe_data.PipeIndex = new Vector2(start_row, start_col);
-        
+        start_pipe_data.boolPipeSide = new BoolPipeSide(start_sides);
+        start_pipe_data.PipeIndex = new Vector2(start_row, start_col);
+        end_pipe_data.boolPipeSide = new BoolPipeSide(end_sides);
+        end_pipe_data.PipeIndex = new Vector2(end_row, end_col);
+
 
         // place the pipe
-        pipes[start_row, start_col].change_pipe_data(pipe_data);
+        pipes[start_row, start_col].change_pipe_data(start_pipe_data);
+        pipes[end_row, end_col].change_pipe_data(end_pipe_data);
         connectedPipe[connectPipeIndex] = pipes[start_row, start_col];
     }
 
@@ -228,6 +295,7 @@ public class Pipe_Grid_Management : MonoBehaviour
                                STARTING_COORDS.y - r);
 
         Destroy(RefTile);
+        Event_Manager.TriggerEvent("subtract_score_to_scoreboard", 3);
     }
 
     // set up listener for communication

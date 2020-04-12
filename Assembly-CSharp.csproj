@@ -45,8 +45,10 @@
     <ImplicitlyExpandDesignTimeFacades>false</ImplicitlyExpandDesignTimeFacades>
   </PropertyGroup>
   <ItemGroup>
+     <Compile Include="Assets\Pipe_Extra.cs" />
      <Compile Include="Assets\Scripts\Event_Manager.cs" />
      <Compile Include="Assets\Scripts\Game Objects\Pipe.cs" />
+     <Compile Include="Assets\Scripts\Game Objects\Pipe_Extra.cs" />
      <Compile Include="Assets\Scripts\Grid Script\Pipe_Grid_Management.cs" />
      <Compile Include="Assets\Scripts\Grid Script\Random_Pipe_Grid_Management.cs" />
      <Compile Include="Assets\Scripts\Singleton.cs" />

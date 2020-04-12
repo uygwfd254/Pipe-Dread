@@ -10,10 +10,10 @@ public class Score_Management : MonoBehaviour
     // game objects
     TextMeshProUGUI ScoreText;
 
-    private int level = 0;
-    private int scores = 0;
-    private int lives = 0;
-    private int time = 0;
+    int level = 0;
+    int scores = 0;
+    int lives = 0;
+    int time = 0;
     // Start is called before the first frame update
     void Start()
     {

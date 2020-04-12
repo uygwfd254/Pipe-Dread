@@ -39,7 +39,7 @@ public class Random_Pipe_Grid_Management : MonoBehaviour
         yield return new WaitForSeconds(0.1f);
 
         DIMESION = UI_Manager.Instance.get_random_pipe_grid_dimension();
-        STARTING_COORDS = UI_Manager.Instance.get_starting_random_pipe_grid_coords();
+        STARTING_COORDS = UI_Manager.Instance.get_random_pipe_grid_top_left_coords();
         PipeEmptySprite = UI_Manager.Instance.get_empty_pipe_sprites();
 
         NUM_OF_PIPE_DISPLAY = (int)DIMESION.x;
@@ -51,7 +51,7 @@ public class Random_Pipe_Grid_Management : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        check_first_pipe_is_destoryed();
+        check_first_pipe_is_destroyed();
     }
 
     void generate_empty_grid_with_coords() {
@@ -60,31 +60,28 @@ public class Random_Pipe_Grid_Management : MonoBehaviour
 
         for (int r = 0; r < NUM_OF_PIPE_DISPLAY; r++) {
             GameObject Pipe = (GameObject)Instantiate(RefTile, transform);
-            System.Object[] pipe_data = generate_random_pipe_data();
             
             Pipe.name = "Random Pipe R" + r.ToString();
             pipes[r] = new Pipe(ref Pipe, 
-                                pipe_data, STARTING_COORDS.x,
+                                generate_random_pipe_data(),
+                                STARTING_COORDS.x,
                                 STARTING_COORDS.y + r);
         }
 
         Destroy(RefTile);
     }
 
-    System.Object[] generate_random_pipe_data() {
-        System.Object[] pipe_data;
-        pipe_data = new System.Object[10];
-        int i = 0;
+    PipeData generate_random_pipe_data() {
+        PipeData pipe_data = new PipeData();
 
         // generate pipe type
-        // load better randomizer
         System.Random rnd = new System.Random(Guid.NewGuid().GetHashCode());
         PipeType pipe_type = (PipeType)rnd.Next(0, 3);
-        pipe_data[i++] = pipe_type;
+        pipe_data.pipeType = pipe_type;
         
         // generate image path
         int pipe_type_num = (int)pipe_type;
-        pipe_data[i++] = PipeEmptySprite[pipe_type_num];
+        pipe_data.PipeSprite = PipeEmptySprite[pipe_type_num];
 
         // generate rotation data
         int num_of_rotation = 0;
@@ -100,11 +97,11 @@ public class Random_Pipe_Grid_Management : MonoBehaviour
             default:
                 break;
         }
-        pipe_data[i++] = num_of_rotation;
+        pipe_data.rotationTimes = num_of_rotation;
 
-        // bad code:
-        pipe_data[6] = "";
+        
         // generate open side base on rotation
+        pipe_data.curvedPipeSide = "";
         bool[] sides = new bool[4];
         switch(pipe_type) {
             case PipeType.Straight:
@@ -116,8 +113,8 @@ public class Random_Pipe_Grid_Management : MonoBehaviour
                 break;
             
             case PipeType.Curved:
-                string[] sides_ = new string[4] {"R", "D", "L", "U"};
-                string side__ = ""; //fml
+                string[] possible_sides = new string[4] {"R", "D", "L", "U"};
+                string open_side = "";
                 sides = new bool[4] {true, true, false, false};
 
                 bool tmp;
@@ -129,12 +126,12 @@ public class Random_Pipe_Grid_Management : MonoBehaviour
                     sides[0] = tmp;
                 }
                 int m = 0;
-                foreach (string elem in sides_) {
+                foreach (string elem in possible_sides) {
                     if (sides[m])
-                        side__ += elem;
+                        open_side += elem;
                     m++;
                 }
-                pipe_data[6] = side__;
+                pipe_data.curvedPipeSide = open_side;
                 break;
             
             case PipeType.Cross:
@@ -145,11 +142,10 @@ public class Random_Pipe_Grid_Management : MonoBehaviour
             default:
                 break;
         }
-        pipe_data[i++] = new BoolPipeSide(sides);
+        pipe_data.boolPipeSide = new BoolPipeSide(sides);
 
-        string is_in_grid = "no";
-        pipe_data[i++] = is_in_grid;
-        pipe_data[i++] = new Vector2(0, 0);
+        pipe_data.isInGrid = "no";
+        pipe_data.PipeIndex = new Vector2(0, 0);
 
         return pipe_data;
     }
@@ -161,7 +157,7 @@ public class Random_Pipe_Grid_Management : MonoBehaviour
         return first_pipe;
     }
 
-    void check_first_pipe_is_destoryed() {
+    void check_first_pipe_is_destroyed() {
         try {
             if (pipes[0].get_pipe_state() == PipeState.Destroyed)
                 pop_front_pipe();
@@ -177,13 +173,13 @@ public class Random_Pipe_Grid_Management : MonoBehaviour
 
         GameObject RefTile = (GameObject)Instantiate(Resources.Load("Pipe Sprite"));
         GameObject Pipe = (GameObject)Instantiate(RefTile, transform);
-        System.Object[] pipe_data = generate_random_pipe_data();
 
         int pipe_index = NUM_OF_PIPE_DISPLAY - 1;
 
         Pipe.name = "Random Pipe R" + pipe_index.ToString();
         pipes[pipe_index] = new Pipe(ref Pipe, 
-                            pipe_data, STARTING_COORDS.x,
+                            generate_random_pipe_data(),
+                            STARTING_COORDS.x,
                             STARTING_COORDS.y + pipe_index);
 
         Destroy(RefTile);

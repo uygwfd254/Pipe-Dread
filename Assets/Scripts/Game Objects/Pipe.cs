@@ -3,137 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[System.Serializable]
-public enum PipeType {
-    Straight = 0,
-    Curved = 1,
-    Cross = 2,
-    Start = 3,
-    Empty = 4
-}
-
-[System.Serializable]
-public enum PipeState {
-    Empty = 0,
-    Filling = 1,
-    HalfFilling = 2,
-    HalfFilled = 3,
-    Filled = 4,
-    Destroyed = 5
-}
-
-[System.Serializable]
-public class BoolPipeSide {
-    private Dictionary<string, bool> OpenSides;
-
-    // bool r, bool d, bool l, bool u
-    public BoolPipeSide(bool[] sides) {
-        OpenSides = new Dictionary<string, bool>() {
-            {"R", false},
-            {"D", false},
-            {"L", false},
-            {"U", false}
-        };
-        // update the dictionary with new sides
-        int i = 0;
-        Dictionary<string, bool> Temp = new Dictionary<string, bool>();
-        foreach(KeyValuePair<string, bool> element in OpenSides) {
-            Temp.Add(element.Key, sides[i++]);
-        }
-
-        OpenSides = Temp;
-    }
-
-    public bool get_bool_side(string side) {
-        foreach(KeyValuePair<string, bool> element in OpenSides) {
-            if (side == element.Key)
-                return element.Value;
-        }
-
-        return false;
-    }
-
-    public void set_bool_side(string side, bool bool_) {
-        Dictionary<string, bool> Temp = new Dictionary<string, bool>();
-        foreach(KeyValuePair<string, bool> element in OpenSides) {
-            if (element.Key == side) {
-                Temp.Add(element.Key, bool_);
-            } else {
-                Temp.Add(element.Key, element.Value);
-            }
-        }
-
-        OpenSides = Temp;
-    }
-
-    public string pipe_bool_search(bool target) {
-        foreach(KeyValuePair<string, bool> element in OpenSides) {
-            if (element.Value == target)
-                return element.Key;
-        }
-
-        return "";
-    }
-}
-
-class ObjectPipeSide {
-    private Dictionary<string, Pipe> PipeSides;
-    private Dictionary<string, string> opposide_side_list = 
-            new Dictionary<string, string>() {
-                {"R", "L"},
-                {"D", "U"},
-                {"L", "R"},
-                {"U", "D"}
-            };
-
-    public ObjectPipeSide() {
-        PipeSides = new Dictionary<string, Pipe>() {
-            {"R", null},
-            {"D", null},
-            {"L", null},
-            {"U", null}
-        };
-    }
-
-    public void set_pipe_with_side(string side, Pipe pipe) {
-        Dictionary<string, Pipe> Temp = new Dictionary<string, Pipe>();
-        foreach(KeyValuePair<string, Pipe> element in PipeSides) {
-            if (element.Key == side) {
-                Temp.Add(element.Key, pipe);
-            } else {
-                Temp.Add(element.Key, element.Value);
-            }
-        }
-
-        PipeSides = Temp;
-    }
-
-    public string get_opposite_pipe_string(string side) {
-        foreach(KeyValuePair<string, string> element in opposide_side_list) {
-            if (element.Key == side)
-                return element.Value;
-        }
-
-        return "";
-    }
-
-    public Pipe get_pipe_with_side(string side) {
-        foreach(KeyValuePair<string, Pipe> element in PipeSides) {
-            if (element.Key == side)
-                return element.Value;
-        }
-
-        return null;
-    }
-}
-
-
-enum CrossPipeFillState {
-    Empty = 0,
-    Vertical = 1,
-    Horizontal = 2
-}
-
 [System.Serializable] //public defintion of class
 public class Pipe
 {
@@ -161,9 +30,8 @@ public class Pipe
 
         adjacent_pipes = new ObjectPipeSide();
         cross_flip = false;
-        //rc_index = new Vector2();
     }
-    public Pipe(ref GameObject Pipe, System.Object[] pipe_data,
+    public Pipe(ref GameObject Pipe, PipeData pipe_data,
         float x_pos, float y_pos)
         : this(ref Pipe, x_pos, y_pos)
     {
@@ -171,31 +39,27 @@ public class Pipe
         change_pipe_data(pipe_data);
     }
 
-    public void change_pipe_data(System.Object[] pipe_data) {
-        // pipe data : PipeType, Sprite, time_of_rotation.
-        int i = 0;
-
-        pipe_type = (PipeType)pipe_data[i++];
-        PipeSprite.GetComponent<SpriteRenderer>().sprite = (Sprite)pipe_data[i++];
-        PipeSprite.transform.Rotate(Vector3.forward * -90 * (int)pipe_data[i++]);
-        pipe_open_side = (BoolPipeSide)pipe_data[i++];
-        rc_index = (Vector2)pipe_data[5];
-        curved_pipe_side = (string)pipe_data[6];
-        check_adjacent_pipe((string)pipe_data[i++]);
+    public void change_pipe_data(PipeData pipe_data) {
+        pipe_type = pipe_data.pipeType;
+        PipeSprite.GetComponent<SpriteRenderer>().sprite = pipe_data.PipeSprite;
+        PipeSprite.transform.Rotate(Vector3.forward * -90 * pipe_data.rotationTimes);
+        pipe_open_side = pipe_data.boolPipeSide;
+        rc_index = pipe_data.PipeIndex;
+        curved_pipe_side = pipe_data.curvedPipeSide;
+        check_adjacent_pipe(pipe_data.isInGrid);
 
         // after data is inserted
         PipeSprite.GetComponent<Animator>().enabled = false;
     }
 
-    public System.Object[] get_pipe_data() {
-        System.Object[] pipe_data = new System.Object[10];
-        int i = 0;
+    public PipeData get_pipe_data() {
+        PipeData pipe_data = new PipeData();
 
-        pipe_data[i++] = pipe_type;
-        pipe_data[i++] = PipeSprite.GetComponent<SpriteRenderer>().sprite;
-        pipe_data[i++] = (int)(-(PipeSprite.transform.eulerAngles.z / 90) % 4);
-        pipe_data[i++] = pipe_open_side;
-        pipe_data[6] = curved_pipe_side;
+        pipe_data.pipeType = pipe_type;
+        pipe_data.PipeSprite = PipeSprite.GetComponent<SpriteRenderer>().sprite;
+        pipe_data.rotationTimes = (int)(-(PipeSprite.transform.eulerAngles.z / 90) % 4);
+        pipe_data.boolPipeSide = pipe_open_side;
+        pipe_data.curvedPipeSide = curved_pipe_side;
 
         return pipe_data;
     }
@@ -273,6 +137,7 @@ public class Pipe
 
         // handels rotation
         string[] restriction = new string[2] {"U", "R"};
+        string[] restriction_ = new string[2] {"D", "L"};
         string[] curve_restrict = new string[4] {"RD", "DL", "LU", "UR"};
         switch(pipe_type) {
             case PipeType.Start:
@@ -304,12 +169,20 @@ public class Pipe
                 break;
 
             case PipeType.Cross:
-                foreach(string element in restriction) {
-                    if (side == element && !cross_flip) {
-                        PipeSprite.transform.Rotate(Vector3.forward * 180);
-                        cross_flip = true;
+                if (!cross_flip) {
+                    foreach(string element in restriction) {
+                        if (side == element) {
+                            PipeSprite.transform.Rotate(Vector3.forward * 180);
+                            cross_flip = true;
+                        }
                     }
-                } 
+                } else {
+                    foreach(string element in restriction_) {
+                        if (side == element) {
+                            PipeSprite.transform.Rotate(Vector3.forward * 180);
+                        }
+                    }
+                }
                 break;
 
             default:
@@ -321,9 +194,9 @@ public class Pipe
         return PipeSprite.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime > 1;
     }
 
-    void check_adjacent_pipe(string side="") {
+    bool check_adjacent_pipe(string side="") {
         if (side == "no")
-            return;
+            return false;
 
         if (side == "yes")
             side = "";
@@ -344,10 +217,12 @@ public class Pipe
         };
 
         int i = 0;
+        bool is_adjacent = false;
         foreach(KeyValuePair<string, Vector2> element in search_coord_list) {
             if (pipe_open_side.get_bool_side(element.Key) &&
                 (rc_index != restriction[i]) &&
                 (side == "" || side == element.Key)) {
+                is_adjacent = true;
                 pipe = (Pipe)Event_Manager.TriggerEvent("get_pipe_with_index",
                     new Vector2(rc_index.x + element.Value.x,
                                 rc_index.y + element.Value.y));
@@ -355,12 +230,15 @@ public class Pipe
                     adjacent_pipes.set_pipe_with_side(element.Key, pipe);
                     if (pipe.adjacent_pipes.get_pipe_with_side(adjacent_pipes.get_opposite_pipe_string(element.Key)) 
                     != this) {
-                        pipe.check_adjacent_pipe(adjacent_pipes.get_opposite_pipe_string(element.Key));
+                        if (!pipe.check_adjacent_pipe(adjacent_pipes.get_opposite_pipe_string(element.Key)))
+                            adjacent_pipes.set_pipe_with_side(element.Key, null);
                     }
                 }
             }
             i++;
         }
+
+        return is_adjacent;
     }
 
     public Pipe next_pipe() {

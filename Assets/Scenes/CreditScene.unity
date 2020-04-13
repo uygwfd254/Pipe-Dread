@@ -266,7 +266,8 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "Credit To:\n\t\n\tProgramer: Yao Lin\n\tProgramer: William Ye\n\tArtist: "
+  m_Text: "Credit To:\n\t\n\tProgramer: Yao Lin\n\tProgramer: William Ye\n\tArtist  
+    : David Tran"
 --- !u!222 &226538920
 CanvasRenderer:
   m_ObjectHideFlags: 0

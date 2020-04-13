@@ -14,6 +14,8 @@ public class Random_Pipe_Grid_Management : MonoBehaviour
     Pipe[] pipes;
     private Sprite[] PipeEmptySprite;
 
+    // generation vars
+    int lastGenNum;
 
     // Start is called before the first frame update
     IEnumerator Start()
@@ -27,6 +29,7 @@ public class Random_Pipe_Grid_Management : MonoBehaviour
 
         NUM_OF_PIPE_DISPLAY = (int)DIMESION.x;
         pipes = new Pipe[NUM_OF_PIPE_DISPLAY];
+        lastGenNum = 0;
 
         generate_empty_grid_with_coords();
     }
@@ -58,8 +61,14 @@ public class Random_Pipe_Grid_Management : MonoBehaviour
         PipeData pipe_data = new PipeData();
 
         // generate pipe type
+        int[] types_gen = new int[7] {0, 0, 1, 1, 1, 1, 2};
+        int randIndex = 0;
         System.Random rnd = new System.Random(Guid.NewGuid().GetHashCode());
-        PipeType pipe_type = (PipeType)rnd.Next(0, 3);
+        while(types_gen[randIndex] == lastGenNum) {
+            randIndex = rnd.Next(0, 7);
+        }
+        PipeType pipe_type = (PipeType)types_gen[randIndex];
+        lastGenNum = randIndex;
         pipe_data.pipeType = pipe_type;
         
         // generate image path

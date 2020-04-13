@@ -136,6 +136,7 @@ public class Pipe_Grid_Management : MonoBehaviour
                     gameOver = true;
                     Event_Manager.TriggerEvent("stop_timer");
                     Event_Manager.TriggerEvent("remove_a_live");
+                    Level_Manager.Instance.ReloadCurrentScene();
                 }
             }
         }

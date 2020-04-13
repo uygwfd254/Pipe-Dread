@@ -25,6 +25,7 @@ public class Input_Manager : MonoBehaviour
         } else if(Input.GetKeyDown("escape")) {
             Level_Manager.Instance.FadeToMainMenu();
         } else if(Input.GetKeyDown(KeyCode.R)) {
+            Event_Manager.TriggerEvent("remove_a_live");
             Level_Manager.Instance.ReloadCurrentScene();
         }
     }

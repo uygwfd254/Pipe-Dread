@@ -23,7 +23,7 @@ public class Score_Management : MonoBehaviour
         level = PlayerPrefs.GetInt("Level", 1);
         lives = PlayerPrefs.GetInt("Lives", 3);
         time = 0;
-        start_time = 15;
+        start_time = Math.Max(15 - (level / 5), 5);
 
         if (lives == 0)
             Level_Manager.Instance.FadeToMainMenu();
@@ -55,12 +55,14 @@ public class Score_Management : MonoBehaviour
     Func<System.Object, System.Object> AddScore;
     Func<System.Object, System.Object> SubtractScore;
     Func<System.Object, System.Object> GoToNextLevel;
+    Func<System.Object, System.Object> SendStartTime;
 
     void Awake() {
         RemoveLives = new Func<System.Object, System.Object>(removeOneLive);
         AddScore = new Func<System.Object, System.Object>(addScore);
         SubtractScore = new Func<System.Object, System.Object>(subtractScore);
         GoToNextLevel = new Func<System.Object, System.Object>(goToNextLevel);
+        SendStartTime = new Func<System.Object, System.Object>(sendStartTime);
     }
 
     void OnEnable()
@@ -69,6 +71,7 @@ public class Score_Management : MonoBehaviour
         Event_Manager.StartListening("add_score_to_scoreboard", AddScore);
         Event_Manager.StartListening("subtract_score_to_scoreboard", SubtractScore);
         Event_Manager.StartListening("go_to_next_level", GoToNextLevel);
+        Event_Manager.StartListening("send_start_time", SendStartTime);
     }
 
     void OnDisable()
@@ -77,6 +80,7 @@ public class Score_Management : MonoBehaviour
         Event_Manager.StopListening("add_score_to_scoreboard", AddScore);
         Event_Manager.StopListening("subtract_score_to_scoreboard", SubtractScore);
         Event_Manager.StopListening("go_to_next_level", GoToNextLevel);
+        Event_Manager.StopListening("send_start_time", SendStartTime);
     }
 
     // listening functions
@@ -102,5 +106,9 @@ public class Score_Management : MonoBehaviour
         PlayerPrefs.SetInt("Level", level);
         Level_Manager.Instance.ReloadCurrentScene();
         return null;
+    }
+
+    System.Object sendStartTime(System.Object p) {
+        return start_time;
     }
 }

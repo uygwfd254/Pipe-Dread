@@ -43,7 +43,7 @@ public class Pipe_Grid_Management : MonoBehaviour
         connectPipeIndex = 0;
         gameOver = false;
         passedLevel = false;
-        start_time = 15;
+        start_time = (int)Event_Manager.TriggerEvent("send_start_time");
 
         generate_empty_grid_with_coords();
         generate_starting_and_ending_pipe();
@@ -112,10 +112,11 @@ public class Pipe_Grid_Management : MonoBehaviour
 
     void check_connect_pipe_animaton() {
         int time = (int)Event_Manager.TriggerEvent("get_time");
-
-        if (time == start_time) {
-            pipes[(int)StartPipeCoord.x, (int)StartPipeCoord.y].start_filling();
-        }
+        try {
+            if (time == start_time) {
+                pipes[(int)StartPipeCoord.x, (int)StartPipeCoord.y].start_filling();
+            }
+        } catch {}
 
         if (gameOver) return;
 

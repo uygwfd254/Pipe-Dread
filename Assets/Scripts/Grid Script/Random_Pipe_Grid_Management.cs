@@ -16,6 +16,7 @@ public class Random_Pipe_Grid_Management : MonoBehaviour
 
     // generation vars
     int lastGenNum;
+    int lastGenRotation;
 
     // Start is called before the first frame update
     IEnumerator Start()
@@ -30,6 +31,7 @@ public class Random_Pipe_Grid_Management : MonoBehaviour
         NUM_OF_PIPE_DISPLAY = (int)DIMESION.x;
         pipes = new Pipe[NUM_OF_PIPE_DISPLAY];
         lastGenNum = 0;
+        lastGenRotation = 0;
 
         generate_empty_grid_with_coords();
     }
@@ -61,11 +63,12 @@ public class Random_Pipe_Grid_Management : MonoBehaviour
         PipeData pipe_data = new PipeData();
 
         // generate pipe type
-        int[] types_gen = new int[7] {0, 0, 1, 1, 1, 1, 2};
+        int[] types_gen = new int[8] {0, 0, 0, 1, 1, 1, 1, 2};
         int randIndex = 0;
         System.Random rnd = new System.Random(Guid.NewGuid().GetHashCode());
+        randIndex = rnd.Next(0, 8);
         while(types_gen[randIndex] == lastGenNum) {
-            randIndex = rnd.Next(0, 7);
+            randIndex = rnd.Next(0, 8);
         }
         PipeType pipe_type = (PipeType)types_gen[randIndex];
         lastGenNum = randIndex;
@@ -84,6 +87,9 @@ public class Random_Pipe_Grid_Management : MonoBehaviour
             
             case PipeType.Curved:
                 num_of_rotation = rnd.Next(0, 4);
+                while(lastGenRotation == num_of_rotation)
+                    num_of_rotation = rnd.Next(0, 4);
+                lastGenRotation = num_of_rotation;
                 break;
             
             default:

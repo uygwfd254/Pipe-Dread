@@ -104,6 +104,7 @@ public class Score_Management : MonoBehaviour
         level++;
         lives++;
         PlayerPrefs.SetInt("Level", level);
+        PlayerPrefs.SetInt("Lives", lives);
         Level_Manager.Instance.ReloadCurrentScene();
         return null;
     }

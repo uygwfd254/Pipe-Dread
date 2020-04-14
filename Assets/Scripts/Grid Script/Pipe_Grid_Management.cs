@@ -104,7 +104,8 @@ public class Pipe_Grid_Management : MonoBehaviour
             );
 
             if (((Pipe)get_pipe_with_index(pipe_pos)).get_pipe_state() == PipeState.Empty &&
-                ((Pipe)get_pipe_with_index(pipe_pos)).get_pipe_type() != PipeType.Start) {
+                ((Pipe)get_pipe_with_index(pipe_pos)).get_pipe_type() != PipeType.Start &&
+                ((Pipe)get_pipe_with_index(pipe_pos)).get_pipe_type() != PipeType.End) {
                 delete_pipe(pipe_pos);
             }
         }

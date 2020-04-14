@@ -285,8 +285,8 @@ public class Pipe_Grid_Management : MonoBehaviour
     void delete_pipe(Vector2 pipe_pos) {
         GameObject RefTile = (GameObject)Instantiate(Resources.Load("Pipe Sprite"));
 
-        int r = (int)pipe_pos.y;
-        int c = (int)pipe_pos.x;
+        int r = (int)pipe_pos.x;
+        int c = (int)pipe_pos.y;
         GameObject Pipe = (GameObject)Instantiate(RefTile, transform);
 
         Pipe.name = "Pipe R" + r.ToString() +

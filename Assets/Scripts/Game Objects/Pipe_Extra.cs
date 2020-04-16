@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[System.Serializable]
 public class PipeUtil {
     public Dictionary<string, string> opposite_side_list = 
         new Dictionary<string, string>() {
@@ -25,7 +24,6 @@ public class PipeUtil {
     public PipeUtil() {}
 }
 
-[System.Serializable]
 public enum PipeType {
     // also pipe sprite index
     Straight = 0,
@@ -36,7 +34,6 @@ public enum PipeType {
     End
 }
 
-[System.Serializable]
 public enum PipeState {
     Empty,
     Filling,
@@ -46,7 +43,6 @@ public enum PipeState {
     Destroyed
 }
 
-[System.Serializable]
 public class BoolPipeSide {
     Dictionary<string, bool> OpenSides;
 
@@ -100,7 +96,6 @@ public class BoolPipeSide {
     }
 }
 
-[System.Serializable]
 class ObjectPipeSide {
     Dictionary<string, Pipe> PipeSides;
 
@@ -146,14 +141,12 @@ class ObjectPipeSide {
     }
 }
 
-[System.Serializable]
 enum CrossPipeFillState {
     Empty,
     Vertical,
     Horizontal
 }
 
-[System.Serializable]
 public class PipeData {
     public PipeType pipeType;
     public Sprite PipeSprite;

@@ -45,6 +45,7 @@
     <ImplicitlyExpandDesignTimeFacades>false</ImplicitlyExpandDesignTimeFacades>
   </PropertyGroup>
   <ItemGroup>
+     <Compile Include="Assets\Scripts\Audio_Manager.cs" />
      <Compile Include="Assets\Scripts\Event_Manager.cs" />
      <Compile Include="Assets\Scripts\Game Objects\Pipe.cs" />
      <Compile Include="Assets\Scripts\Game Objects\Pipe_Extra.cs" />

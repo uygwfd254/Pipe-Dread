@@ -93,6 +93,7 @@ public class Pipe_Grid_Management : MonoBehaviour
 
             if (((Pipe)get_pipe_with_index(pipe_pos)).get_pipe_type() == PipeType.Empty) {
                 place_down_pipe(pipe_pos);
+                Audio_Manager.Instance.Play("Pipe Place");
             }
         }
 
@@ -105,8 +106,10 @@ public class Pipe_Grid_Management : MonoBehaviour
 
             if (((Pipe)get_pipe_with_index(pipe_pos)).get_pipe_state() == PipeState.Empty &&
                 ((Pipe)get_pipe_with_index(pipe_pos)).get_pipe_type() != PipeType.Start &&
-                ((Pipe)get_pipe_with_index(pipe_pos)).get_pipe_type() != PipeType.End) {
+                ((Pipe)get_pipe_with_index(pipe_pos)).get_pipe_type() != PipeType.End &&
+                ((Pipe)get_pipe_with_index(pipe_pos)).get_pipe_type() != PipeType.Empty) {
                 delete_pipe(pipe_pos);
+                Audio_Manager.Instance.Play("Pipe Break");
             }
         }
     }
@@ -116,6 +119,7 @@ public class Pipe_Grid_Management : MonoBehaviour
         try {
             if (time == start_time) {
                 pipes[(int)StartPipeCoord.x, (int)StartPipeCoord.y].start_filling();
+                Audio_Manager.Instance.Play("Water Flowing");
             }
         } catch {}
 
@@ -135,6 +139,7 @@ public class Pipe_Grid_Management : MonoBehaviour
                 } else if (passedLevel) {
                     Event_Manager.TriggerEvent("go_to_next_level");
                 } else {
+                    Audio_Manager.Instance.Stop("Water Flowing");
                     gameOver = true;
                     Event_Manager.TriggerEvent("stop_timer");
                     Event_Manager.TriggerEvent("remove_a_live");

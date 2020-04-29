@@ -25,6 +25,7 @@ public class Pipe_Grid_Management : MonoBehaviour
     bool gameOver;
     bool passedLevel;
     int start_time;
+    int pipe_distance;
 
     // Start is called before the first frame update
     IEnumerator Start()
@@ -43,7 +44,8 @@ public class Pipe_Grid_Management : MonoBehaviour
         connectPipeIndex = 0;
         gameOver = false;
         passedLevel = false;
-        start_time = (int)Event_Manager.TriggerEvent("send_start_time");
+        start_time = Math.Max(15 - ((int)Event_Manager.TriggerEvent("send_level") / 5), 5);
+        pipe_distance = Math.Min(12, 2 + ((int)Event_Manager.TriggerEvent("send_level") / 4));
 
         generate_empty_grid_with_coords();
         generate_starting_and_ending_pipe();
@@ -107,7 +109,8 @@ public class Pipe_Grid_Management : MonoBehaviour
             if (((Pipe)get_pipe_with_index(pipe_pos)).get_pipe_state() == PipeState.Empty &&
                 ((Pipe)get_pipe_with_index(pipe_pos)).get_pipe_type() != PipeType.Start &&
                 ((Pipe)get_pipe_with_index(pipe_pos)).get_pipe_type() != PipeType.End &&
-                ((Pipe)get_pipe_with_index(pipe_pos)).get_pipe_type() != PipeType.Empty) {
+                ((Pipe)get_pipe_with_index(pipe_pos)).get_pipe_type() != PipeType.Empty &&
+                ((int)Event_Manager.TriggerEvent("send_score") > 0)) {
                 delete_pipe(pipe_pos);
                 Audio_Manager.Instance.Play("Pipe Break");
             }
@@ -137,6 +140,7 @@ public class Pipe_Grid_Management : MonoBehaviour
                     connectPipeIndex++;
                     Event_Manager.TriggerEvent("add_score_to_scoreboard", 10);
                 } else if (passedLevel) {
+                    Audio_Manager.Instance.Stop("Water Flowing");
                     Event_Manager.TriggerEvent("go_to_next_level");
                 } else {
                     Audio_Manager.Instance.Stop("Water Flowing");
@@ -172,18 +176,22 @@ public class Pipe_Grid_Management : MonoBehaviour
     void generate_starting_and_ending_pipe() {
         // generate position
         System.Random rnd = new System.Random(Guid.NewGuid().GetHashCode());
-        int start_row = rnd.Next(0, (int)DIMESION.x);
-        int start_col = rnd.Next(0, (int)DIMESION.y);
-        int end_row = rnd.Next(0, (int)DIMESION.x);
-        int end_col = rnd.Next(0, (int)DIMESION.y);
-
-        // make sure coords are the same
-        while(start_row == end_row && start_col == end_col) {
+        Vector2 EndPipeCoord;
+        int start_row, start_col, end_row, end_col;
+        do {
+            start_row = rnd.Next(0, (int)DIMESION.x);
+            start_col = rnd.Next(0, (int)DIMESION.y);
             end_row = rnd.Next(0, (int)DIMESION.x);
             end_col = rnd.Next(0, (int)DIMESION.y);
-        }
 
-        StartPipeCoord = new Vector2(start_row, start_col);
+            // make sure coords are the same
+            while(start_row == end_row && start_col == end_col) {
+                end_row = rnd.Next(0, (int)DIMESION.x);
+                end_col = rnd.Next(0, (int)DIMESION.y);
+            }
+            StartPipeCoord = new Vector2(start_row, start_col);
+            EndPipeCoord = new Vector2(end_row, end_col);
+        } while(Vector2.Distance(StartPipeCoord, EndPipeCoord) >= pipe_distance);
 
         // generate pipe data
         PipeData start_pipe_data = new PipeData();

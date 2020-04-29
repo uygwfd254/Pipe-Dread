@@ -1,6 +1,7 @@
 ScriptsOnlyBuild:
   usedScripts:
     Assembly-CSharp.dll:
+    - Audio_Manager
     - Event_Manager
     - Input_Manager
     - Level_Manager
@@ -32,6 +33,7 @@ ScriptsOnlyBuild:
     - UnityEngine.UI.CanvasScaler
     - UnityEngine.UI.GraphicRaycaster
     - UnityEngine.UI.Image
+    - UnityEngine.UI.RawImage
     - UnityEngine.UI.Text
   sceneClasses:
     Assets/Scenes/CreditScene.unity:
@@ -60,21 +62,23 @@ ScriptsOnlyBuild:
     - Class: 108
       Script: {instanceID: 0}
     - Class: 114
-      Script: {instanceID: 11148}
+      Script: {instanceID: 11152}
     - Class: 114
-      Script: {instanceID: 11304}
+      Script: {instanceID: 11308}
     - Class: 114
-      Script: {instanceID: 11346}
+      Script: {instanceID: 11350}
     - Class: 114
-      Script: {instanceID: 11730}
+      Script: {instanceID: 11734}
     - Class: 114
-      Script: {instanceID: 12098}
+      Script: {instanceID: 12102}
     - Class: 114
-      Script: {instanceID: 12528}
+      Script: {instanceID: 12124}
     - Class: 114
-      Script: {instanceID: 12598}
+      Script: {instanceID: 12532}
     - Class: 114
-      Script: {instanceID: 12966}
+      Script: {instanceID: 12602}
+    - Class: 114
+      Script: {instanceID: 12970}
     - Class: 115
       Script: {instanceID: 0}
     - Class: 128
@@ -108,6 +112,8 @@ ScriptsOnlyBuild:
       Script: {instanceID: 0}
     - Class: 81
       Script: {instanceID: 0}
+    - Class: 83
+      Script: {instanceID: 0}
     - Class: 91
       Script: {instanceID: 0}
     - Class: 95
@@ -117,31 +123,33 @@ ScriptsOnlyBuild:
     - Class: 111
       Script: {instanceID: 0}
     - Class: 114
-      Script: {instanceID: 11148}
+      Script: {instanceID: 11152}
     - Class: 114
-      Script: {instanceID: 11294}
+      Script: {instanceID: 11298}
     - Class: 114
-      Script: {instanceID: 11346}
+      Script: {instanceID: 11350}
     - Class: 114
-      Script: {instanceID: 11524}
+      Script: {instanceID: 11528}
     - Class: 114
-      Script: {instanceID: 12002}
+      Script: {instanceID: 12006}
     - Class: 114
-      Script: {instanceID: 12148}
+      Script: {instanceID: 12152}
     - Class: 114
-      Script: {instanceID: 12248}
+      Script: {instanceID: 12252}
     - Class: 114
-      Script: {instanceID: 12328}
-    - Class: 114
-      Script: {instanceID: 12528}
+      Script: {instanceID: 12332}
     - Class: 114
       Script: {instanceID: 12532}
     - Class: 114
-      Script: {instanceID: 12540}
+      Script: {instanceID: 12536}
     - Class: 114
-      Script: {instanceID: 12598}
+      Script: {instanceID: 12544}
     - Class: 114
-      Script: {instanceID: 12640}
+      Script: {instanceID: 12602}
+    - Class: 114
+      Script: {instanceID: 12644}
+    - Class: 114
+      Script: {instanceID: 13012}
     - Class: 115
       Script: {instanceID: 0}
     - Class: 128
@@ -184,21 +192,23 @@ ScriptsOnlyBuild:
     - Class: 108
       Script: {instanceID: 0}
     - Class: 114
-      Script: {instanceID: 11148}
+      Script: {instanceID: 11152}
     - Class: 114
-      Script: {instanceID: 11304}
+      Script: {instanceID: 11308}
     - Class: 114
-      Script: {instanceID: 11346}
+      Script: {instanceID: 11350}
     - Class: 114
-      Script: {instanceID: 11730}
+      Script: {instanceID: 11734}
     - Class: 114
-      Script: {instanceID: 12098}
+      Script: {instanceID: 12102}
     - Class: 114
-      Script: {instanceID: 12528}
+      Script: {instanceID: 12124}
     - Class: 114
-      Script: {instanceID: 12598}
+      Script: {instanceID: 12532}
     - Class: 114
-      Script: {instanceID: 12966}
+      Script: {instanceID: 12602}
+    - Class: 114
+      Script: {instanceID: 12970}
     - Class: 115
       Script: {instanceID: 0}
     - Class: 128
@@ -232,6 +242,8 @@ ScriptsOnlyBuild:
       Script: {instanceID: 0}
     - Class: 81
       Script: {instanceID: 0}
+    - Class: 83
+      Script: {instanceID: 0}
     - Class: 91
       Script: {instanceID: 0}
     - Class: 95
@@ -243,31 +255,35 @@ ScriptsOnlyBuild:
     - Class: 109
       Script: {instanceID: 0}
     - Class: 114
-      Script: {instanceID: 11148}
+      Script: {instanceID: 11152}
     - Class: 114
-      Script: {instanceID: 11304}
+      Script: {instanceID: 11308}
     - Class: 114
-      Script: {instanceID: 11346}
+      Script: {instanceID: 11350}
     - Class: 114
-      Script: {instanceID: 11730}
+      Script: {instanceID: 11734}
     - Class: 114
-      Script: {instanceID: 11752}
+      Script: {instanceID: 11756}
     - Class: 114
-      Script: {instanceID: 12098}
+      Script: {instanceID: 12102}
     - Class: 114
-      Script: {instanceID: 12328}
+      Script: {instanceID: 12124}
     - Class: 114
-      Script: {instanceID: 12342}
+      Script: {instanceID: 12332}
     - Class: 114
-      Script: {instanceID: 12528}
+      Script: {instanceID: 12346}
     - Class: 114
-      Script: {instanceID: 12598}
+      Script: {instanceID: 12532}
     - Class: 114
-      Script: {instanceID: 12758}
+      Script: {instanceID: 12602}
     - Class: 114
-      Script: {instanceID: 12868}
+      Script: {instanceID: 12762}
     - Class: 114
-      Script: {instanceID: 12966}
+      Script: {instanceID: 12872}
+    - Class: 114
+      Script: {instanceID: 12970}
+    - Class: 114
+      Script: {instanceID: 13012}
     - Class: 115
       Script: {instanceID: 0}
     - Class: 128
@@ -941,6 +957,12 @@ ScriptsOnlyBuild:
     className: Slider
   - hash:
       serializedVersion: 2
+      Hash: 66056c2209ff8e6b238f8b056c7eb331
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: Audio_Manager
+  - hash:
+      serializedVersion: 2
       Hash: 0fd6822f6177297bd0eb4d83cc7a9030
     assemblyName: UnityEngine.UI.dll
     namespaceName: UnityEngine.UI
@@ -957,4 +979,4 @@ ScriptsOnlyBuild:
   - Assets/Scenes/GameScene.unity
   - Assets/Scenes/HowToPlay.unity
   - Assets/Scenes/CreditScene.unity
-  playerPath: /home/y41/Temp/Pipe-Dread/Builds/pipe-dread-mvp.x86_64
+  playerPath: /home/y41/Temp/Pipe-Dread/Builds/pipe-dread-final.x86_64

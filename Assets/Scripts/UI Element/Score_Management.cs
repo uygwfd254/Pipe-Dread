@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
@@ -55,14 +53,16 @@ public class Score_Management : MonoBehaviour
     Func<System.Object, System.Object> AddScore;
     Func<System.Object, System.Object> SubtractScore;
     Func<System.Object, System.Object> GoToNextLevel;
-    Func<System.Object, System.Object> SendStartTime;
+    Func<System.Object, System.Object> SendLevel;
+    Func<System.Object, System.Object> SendScore;
 
     void Awake() {
         RemoveLives = new Func<System.Object, System.Object>(removeOneLive);
         AddScore = new Func<System.Object, System.Object>(addScore);
         SubtractScore = new Func<System.Object, System.Object>(subtractScore);
         GoToNextLevel = new Func<System.Object, System.Object>(goToNextLevel);
-        SendStartTime = new Func<System.Object, System.Object>(sendStartTime);
+        SendLevel = new Func<System.Object, System.Object>(sendLevel);
+        SendScore = new Func<System.Object, System.Object>(sendScore);
     }
 
     void OnEnable()
@@ -71,7 +71,8 @@ public class Score_Management : MonoBehaviour
         Event_Manager.StartListening("add_score_to_scoreboard", AddScore);
         Event_Manager.StartListening("subtract_score_to_scoreboard", SubtractScore);
         Event_Manager.StartListening("go_to_next_level", GoToNextLevel);
-        Event_Manager.StartListening("send_start_time", SendStartTime);
+        Event_Manager.StartListening("send_level", SendLevel);
+        Event_Manager.StartListening("send_score", SendScore);
     }
 
     void OnDisable()
@@ -80,7 +81,8 @@ public class Score_Management : MonoBehaviour
         Event_Manager.StopListening("add_score_to_scoreboard", AddScore);
         Event_Manager.StopListening("subtract_score_to_scoreboard", SubtractScore);
         Event_Manager.StopListening("go_to_next_level", GoToNextLevel);
-        Event_Manager.StopListening("send_start_time", SendStartTime);
+        Event_Manager.StopListening("send_level", SendLevel);
+        Event_Manager.StopListening("send_score", SendScore);
     }
 
     // listening functions
@@ -109,7 +111,11 @@ public class Score_Management : MonoBehaviour
         return null;
     }
 
-    System.Object sendStartTime(System.Object p) {
-        return start_time;
+    System.Object sendLevel(System.Object p) {
+        return level;
+    }
+
+    System.Object sendScore(System.Object p) {
+        return scores;
     }
 }

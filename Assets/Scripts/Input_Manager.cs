@@ -23,10 +23,8 @@ public class Input_Manager : MonoBehaviour
             else
                 Time.timeScale = 2;
         } else if(Input.GetKeyDown("escape")) {
+            Audio_Manager.Instance.Stop("Water Flowing");
             Level_Manager.Instance.FadeToMainMenu();
-        } else if(Input.GetKeyDown(KeyCode.R)) {
-            Event_Manager.TriggerEvent("remove_a_live");
-            Level_Manager.Instance.ReloadCurrentScene();
         }
     }
 }

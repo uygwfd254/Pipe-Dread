@@ -45,7 +45,7 @@ public class Pipe_Grid_Management : MonoBehaviour
         gameOver = false;
         passedLevel = false;
         start_time = Math.Max(15 - ((int)Event_Manager.TriggerEvent("send_level") / 5), 5);
-        pipe_distance = Math.Min(12, 2 + ((int)Event_Manager.TriggerEvent("send_level") / 4));
+        pipe_distance = Math.Min(12, 3 + ((int)Event_Manager.TriggerEvent("send_level") / 4));
 
         generate_empty_grid_with_coords();
         generate_starting_and_ending_pipe();
@@ -191,7 +191,8 @@ public class Pipe_Grid_Management : MonoBehaviour
             }
             StartPipeCoord = new Vector2(start_row, start_col);
             EndPipeCoord = new Vector2(end_row, end_col);
-        } while(Vector2.Distance(StartPipeCoord, EndPipeCoord) >= pipe_distance);
+        } while(Vector2.Distance(StartPipeCoord, EndPipeCoord) >= pipe_distance &&
+                Vector2.Distance(StartPipeCoord, EndPipeCoord) <= pipe_distance - rnd.Next(0, 2));
 
         // generate pipe data
         PipeData start_pipe_data = new PipeData();
